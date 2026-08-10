@@ -4,6 +4,11 @@ Scope: [`extract_dem.py`](../extract_dem.py). Takes the clean obstacle table
 from `obstacles_austria.py` and samples the cached Copernicus DEM tiles at
 each point, per the single-cell + 5×5-window design agreed earlier.
 
+For what each output field actually means (including the exact
+DEM-minus-obstacle-base sign convention), see
+[output_fields.md](output_fields.md) — this document covers the *design*
+decisions behind those fields, not a field-by-field glossary.
+
 ## What gets sampled, and how
 
 - **Single-cell**: bilinear interpolation at the obstacle's exact

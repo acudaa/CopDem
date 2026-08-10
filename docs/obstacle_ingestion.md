@@ -8,6 +8,9 @@ exclusion below is a deferral, not a judgment that those records don't
 matter — they're just not yet handled correctly, and it would be worse to
 guess than to skip.
 
+For what each output field actually means, see
+[output_fields.md](output_fields.md).
+
 Keep this file in sync with the code: if a filter or column mapping changes
 in `obstacles_austria.py`, update the corresponding section here in the same
 change.
