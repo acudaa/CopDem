@@ -34,11 +34,28 @@ textual) distinction.
 
 ## What it covers
 
-Distribution + basic statistics for `error_single_m` and
-`error_5x5_median_m`, whole-dataset and broken down by obstacle type —
-both signed errors (DEM minus obstacle base elevation, EGM2008), directly
-comparable to each other. See [output_fields.md](output_fields.md) for
-full field definitions.
+Distribution + basic statistics for the single-cell and 5×5-window-median
+errors, whole-dataset and broken down by obstacle type — **for both DEM
+sources compared in this project**: Copernicus DEM GLO-30
+(`error_single_m`, `error_5x5_median_m`) and Austria's LiDAR-derived DHM
+(`error_single_lidar_m`, `error_5x5_median_lidar_m`). All four are signed
+errors on the same basis (DEM/LiDAR minus obstacle base elevation,
+EGM2008), directly comparable to each other. See
+[output_fields.md](output_fields.md) for full field definitions.
+
+Sections are grouped under a "Copernicus DEM GLO-30" / "Austria LiDAR DEM"
+header per source, not shown as four undifferentiated cards — the two
+products' typical error differs by roughly an order of magnitude (CopDEM
+~5 m mean, LiDAR ~0 m mean; see
+[lidar_comparison.md](lidar_comparison.md)), and after the field-mislabeling
+incident above, grouping by source is a structural safeguard against a
+similar misreading, not just another caption.
+
+**LiDAR caveat, restated here because it matters for every LiDAR number in
+this report**: the LiDAR DEM's vertical datum (EVRF2000 Austria) is an
+*instructed* assumption, not independently verified the way every other
+datum decision in this project was — see lidar_comparison.md's "Vertical
+reference" section.
 
 ## Chart design (per the dataviz skill)
 
@@ -80,5 +97,9 @@ tight, confident estimate.
 - No terrain-elevation-context section (see "Correction" above) — the raw
   `dem_5x5_median_egm2008_m` distribution isn't shown anywhere in the
   current report, though it's still in the underlying CSV.
+- No direct CopDEM-vs-LiDAR section (each is only compared against the
+  obstacle base, not against each other) — that comparison exists as the
+  raster layer in QGIS (see [lidar_comparison.md](lidar_comparison.md)),
+  not in this report.
 - No stratification by terrain slope/region — only by obstacle type, per
   what was asked.

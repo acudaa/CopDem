@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Generate a self-contained static HTML analytical report for
-obstacles_dem_diff.csv: distribution + summary statistics for
-error_single_m and error_5x5_median_m (the single-cell and 5x5-window-
-median DEM-vs-obstacle-base errors, both signed, both on EGM2008), for the
-whole dataset and broken down by obstacle type.
+obstacles_dem_diff.csv: distribution + summary statistics for the
+single-cell and 5x5-window-median DEM-vs-obstacle-base errors (both
+signed, both on EGM2008), for BOTH DEM sources compared in this project
+(Copernicus DEM GLO-30 and Austria's LiDAR-derived DHM), for the whole
+dataset and broken down by obstacle type. Sections are grouped by source
+so the two products' numbers - which differ by roughly an order of
+magnitude in typical error (CopDEM ~5m, LiDAR ~0m mean) - are never read
+as an undifferentiated list of four similar-looking cards.
 
 NOTE: an earlier version of this report used dem_5x5_median_egm2008_m
 (a raw DEM elevation, ~814m mean across Austria) instead of
@@ -30,16 +34,32 @@ OUTPUT_HTML = ROOT_DIR / "reports" / "obstacles_dem_diff_analysis.html"
 
 FIELDS = {
     "error_single_m": {
+        "group": "Copernicus DEM GLO-30",
         "label": "Single-cell error",
         "unit": "m",
         "kind": "diverging",  # signed, centered on 0
         "description": "DEM (single-cell, bilinear) minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base.",
     },
     "error_5x5_median_m": {
+        "group": "Copernicus DEM GLO-30",
         "label": "5×5-window median error",
         "unit": "m",
         "kind": "diverging",  # signed, centered on 0
         "description": "5x5-window median DEM value minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base. (Earlier version of this report used dem_5x5_median_egm2008_m here by mistake - that's a raw elevation, not a discrepancy; see docs/analysis_report.md.)",
+    },
+    "error_single_lidar_m": {
+        "group": "Austria LiDAR DEM (dhm_at_lamb_10m_2018)",
+        "label": "Single-cell error",
+        "unit": "m",
+        "kind": "diverging",
+        "description": "LiDAR DEM (single-cell, bilinear) minus obstacle base elevation, both on EGM2008. Positive = LiDAR reads above the true base. See docs/lidar_comparison.md - the LiDAR vertical datum is an INSTRUCTED assumption (EVRF2000 Austria), not independently verified the way the obstacle data's own datum was.",
+    },
+    "error_5x5_median_lidar_m": {
+        "group": "Austria LiDAR DEM (dhm_at_lamb_10m_2018)",
+        "label": "5×5-window median error",
+        "unit": "m",
+        "kind": "diverging",
+        "description": "5x5-window median LiDAR value minus obstacle base elevation, both on EGM2008. Window is 5x5 cells of LiDAR's native 10m grid (50m x 50m) - smaller footprint than CopDEM's 5x5-at-30m (150m x 150m); same algorithm, different physical area. See docs/lidar_comparison.md.",
     },
 }
 
@@ -294,14 +314,19 @@ def build_report():
         bar_svgs[field_key] = svg_bar_by_type(ts, meta["kind"], meta["label"])
 
     n_total = len(rows)
-    n_window = overall["error_5x5_median_m"]["n"]
+    n_copdem_window = overall["error_5x5_median_m"]["n"]
+    n_lidar_window = overall["error_5x5_median_lidar_m"]["n"]
 
     sections = []
+    current_group = None
     for field_key, meta in FIELDS.items():
         s = overall[field_key]
+        if meta["group"] != current_group:
+            current_group = meta["group"]
+            sections.append(f'<h2 class="group-header">{html.escape(current_group)}</h2>')
         sections.append(f"""
         <section class="card">
-          <h2>{html.escape(meta['label'])} <span class="unit">({meta['unit']})</span></h2>
+          <h3 class="card-title">{html.escape(meta['label'])} <span class="unit">({meta['unit']})</span></h3>
           <p class="desc">{html.escape(meta['description'])}</p>
           <div class="kpi-row">
             <div class="kpi"><div class="kpi-label">n</div><div class="kpi-value">{s['n']:,}</div></div>
@@ -310,9 +335,9 @@ def build_report():
             <div class="kpi"><div class="kpi-label">stdev</div><div class="kpi-value">{_fmt(s['stdev'])}</div></div>
             <div class="kpi"><div class="kpi-label">p5&#8211;p95</div><div class="kpi-value">{_fmt(s['p5'])} &#8211; {_fmt(s['p95'])}</div></div>
           </div>
-          <h3>Distribution (whole dataset)</h3>
+          <h4>Distribution (whole dataset)</h4>
           {hist_svgs[field_key]}
-          <h3>By obstacle type</h3>
+          <h4>By obstacle type</h4>
           {render_table(type_stats[field_key], field_key, meta)}
           <p class="chart-caption">Mean {html.escape(meta['label'].lower())} by type (bar length = mean; hover for n and median). Types marked &#8224; have n &lt; {MIN_TYPE_N_FOR_NOTE} &#8212; too few points for the mean to be a stable estimate; shown for completeness, not to be read as a trend.</p>
           {bar_svgs[field_key]}
@@ -362,9 +387,11 @@ def build_report():
     background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
     padding: 24px; margin-bottom: 24px; overflow-x: auto;
   }}
-  .card h2 {{ font-size: 17px; margin: 0 0 4px; }}
-  .card h2 .unit {{ color: var(--text-muted); font-weight: 400; font-size: 14px; }}
-  .card h3 {{ font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 24px 0 10px; }}
+  .group-header {{ font-size: 15px; font-weight: 600; margin: 36px 0 12px; color: var(--text-primary); }}
+  .group-header:first-of-type {{ margin-top: 0; }}
+  .card-title {{ font-size: 17px; margin: 0 0 4px; font-weight: 600; }}
+  .card-title .unit {{ color: var(--text-muted); font-weight: 400; font-size: 14px; }}
+  .card h4 {{ font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 24px 0 10px; }}
   .desc {{ color: var(--text-secondary); font-size: 13px; margin: 0 0 16px; max-width: 640px; }}
   .kpi-row {{ display: flex; gap: 24px; flex-wrap: wrap; }}
   .kpi-label {{ font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }}
@@ -397,14 +424,18 @@ def build_report():
 <body>
 <div class="wrap">
   <header>
-    <h1>Copernicus DEM vs. obstacle base &#8212; analysis (Austria)</h1>
-    <p>{n_total:,} obstacles (simple points, v1 scope) &#8226; {n_window:,} with a valid 5&#215;5-window sample &#8226;
+    <h1>DEM vs. obstacle base &#8212; analysis (Austria)</h1>
+    <p>{n_total:,} obstacles (simple points, v1 scope) compared against two DEM sources &#8212;
+       Copernicus DEM GLO-30 ({n_copdem_window:,} with a valid 5&#215;5-window sample) and
+       Austria's LiDAR-derived DHM ({n_lidar_window:,} with a valid 5&#215;5-window sample) &#8226;
        generated by <code>pipeline/analyze_obstacles_diff.py</code> from <code>obstacles_dem_diff.csv</code>.
-       Field definitions: see <a href="../docs/output_fields.md">docs/output_fields.md</a>.</p>
+       Field definitions: see <a href="../docs/output_fields.md">docs/output_fields.md</a>;
+       LiDAR-specific caveats (including the instructed, not independently verified, vertical-datum
+       assumption) in <a href="../docs/lidar_comparison.md">docs/lidar_comparison.md</a>.</p>
   </header>
 
   <section class="card">
-    <h2>Overview</h2>
+    <h3 class="card-title">Overview</h3>
     {render_overall_table(overall)}
   </section>
 
@@ -412,8 +443,11 @@ def build_report():
 
   <footer>
     &#8224; obstacle type with n &lt; {MIN_TYPE_N_FOR_NOTE} &#8212; too few points for a stable mean.
-    See <a href="../docs/dem_extraction.md">docs/dem_extraction.md</a> for sampling method and known limitations
-    (e.g. the 4 obstacles excluded from window stats near chunk edges).
+    See <a href="../docs/dem_extraction.md">docs/dem_extraction.md</a> (Copernicus DEM) and
+    <a href="../docs/lidar_comparison.md">docs/lidar_comparison.md</a> (Austria LiDAR DEM) for
+    sampling method and known limitations (e.g. the 4 obstacles excluded from CopDEM window
+    stats near chunk edges; the LiDAR window is 50&#215;50m vs CopDEM's 150&#215;150m &#8212; same
+    algorithm, different physical footprint).
   </footer>
 </div>
 <div id="tooltip"></div>
