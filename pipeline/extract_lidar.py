@@ -11,11 +11,17 @@ rather than producing a separate output — this keeps one obstacle table
 carrying both comparisons, so a row-by-row CopDEM-vs-LiDAR read is a
 single-file lookup.
 
-Vertical reference assumption (explicitly instructed, not independently
-verified the way Austria's obstacle-data datum was): the LiDAR DEM is
-assumed to be on the same EVRF2000 Austria height system (EPSG:9274) as
-the obstacle data. Converted to EGM2008 via the same vertical_datum
-conversion chain for a fair comparison against elev_base_egm2008_m.
+Vertical reference: GHA height (EPSG:5778, "Adria Triest") - CORRECTED
+from an earlier instructed assumption of EVRF2000 Austria (EPSG:9274,
+the same datum as the obstacle data) after the user questioned that
+assumption. BEV's own product documentation for this exact product line
+states its vertical reference as GHA, not EVRF2000 Austria - two
+genuinely different systems (official EPSG grid-based transform exists
+between them, EPSG:9275), confirmed numerically to differ by several
+tens of centimetres at multiple test points - see vertical_datum.py's
+self-test and docs/lidar_comparison.md. Converted to EGM2008 via the
+same vertical_datum conversion chain for a fair comparison against
+elev_base_egm2008_m.
 """
 import csv
 from pathlib import Path
@@ -32,7 +38,7 @@ ROOT_DIR = Path(__file__).parent.parent
 LIDAR_PATH = ROOT_DIR / "data" / "dem_tiles" / "austria_localDEM" / "dhm_at_lamb_10m_2018.tif"
 DIFF_CSV = ROOT_DIR / "data" / "obstacles" / "austria" / "obstacles_dem_diff.csv"
 
-COUNTRY_VERTICAL_EPSG = SOURCE_VERTICAL_CRS["AT"]
+COUNTRY_VERTICAL_EPSG = SOURCE_VERTICAL_CRS["AT_LIDAR_DHM"]  # GHA (EPSG:5778) - see vertical_datum.py
 
 _to_lidar_crs = Transformer.from_crs("EPSG:4326", "EPSG:31287", always_xy=True)
 

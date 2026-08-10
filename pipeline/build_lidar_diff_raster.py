@@ -1,59 +1,84 @@
 #!/usr/bin/env python3
 """Build a difference raster: Copernicus DEM GLO-30 minus Austria's LiDAR-
-derived DHM (dhm_at_lamb_10m_2018.tif), both on EGM2008, at CopDEM's
-native per-chunk grid. See docs/lidar_comparison.md for the full design
-rationale, known limitations, and the vertical-datum assumption.
+derived DHM (dhm_at_lamb_10m_2018.tif), both on EGM2008, on a **10 m grid**
+— LiDAR's own native grid (EPSG:31287), unmodified. See
+docs/lidar_comparison.md for the full design rationale, known limitations,
+and the vertical-datum assumption.
 
-Per chunk (matching the same "sample from native source, never a
-resampled mosaic" principle as extract_dem.py):
-  1. Reproject the LiDAR raster (EPSG:31287, 10m) onto THIS chunk's exact
-     grid (EPSG:4326, ~30m) via averaging (downsampling 10m -> ~30m).
-  2. Compute the EVRF2000 Austria -> EGM2008 correction on a coarse grid
-     across the chunk (geoid separation varies smoothly over kilometres,
-     so a sparse grid + bilinear interpolation is a standard, justified
-     simplification - not full-resolution point-by-point conversion,
-     which would be needlessly slow for no accuracy gain).
-  3. diff = CopDEM - (LiDAR_resampled + correction), same subtraction
-     convention as error_single_m (positive = CopDEM reads above LiDAR).
-  4. Sanity-clip |diff| > 100 m to nodata - defensive guard against the
-     correction grid producing large, non-physical values outside
-     Austria's real border (within a chunk's rectangular bbox but outside
-     the EVRF2000 Austria grid's valid coverage) - see docs/lidar_comparison.md.
-     In practice LiDAR's own nodata mask already excludes non-Austria
-     territory, so this is a belt-and-braces check, not the primary guard.
+Redone from an earlier version that output on CopDEM's coarser ~30 m grid
+(downsampling LiDAR via averaging). This version does the opposite:
+CopDEM is upsampled onto LiDAR's 10 m grid via bilinear interpolation,
+via a WarpedVRT over the CopDEM mosaic (data/dem_mosaic.vrt) so the whole
+country is one continuous reproject rather than 40 separate per-chunk
+warps — there's now a single unambiguous target grid (LiDAR's own),
+unlike the previous version's need to warp LiDAR onto 40 different native
+CopDEM grids. LiDAR itself is read directly, at full native resolution,
+never resampled — it's the detail this version is built to preserve.
+
+Processed in blocks (not one giant in-memory array — the full grid is
+58,061 x 31,793 = ~1.85 billion pixels) via windowed reads/writes.
+
+Steps per block:
+  1. Read the LiDAR block directly (native 10 m, untouched).
+  2. Read the SAME block window from a WarpedVRT of the CopDEM mosaic,
+     reprojected onto LiDAR's exact CRS/transform (bilinear - this is an
+     upsample, ~30m -> 10m, so bilinear/cubic is appropriate; average
+     would be wrong here, that's for downsampling).
+  3. GHA (EPSG:5778) -> EGM2008 correction on a coarse grid within the
+     block, bilinearly interpolated to the block's full resolution (same
+     smooth-over-kilometres justification as before - unchanged by grid
+     resolution). Coordinates are in EPSG:31287 here, so the coarse grid
+     is reprojected to WGS84 lon/lat before calling vertical_datum
+     (which expects lon/lat) - this is new; the previous CopDEM-grid
+     version's blocks were already in EPSG:4326. GHA, not EVRF2000
+     Austria: corrected after the user questioned the original instructed
+     assumption - BEV's own documentation for this product line states
+     GHA ("Adria Triest", EPSG:5778) as its vertical reference, a
+     genuinely different system from EVRF2000 Austria (the obstacle
+     data's datum) - see vertical_datum.py and docs/lidar_comparison.md.
+  4. diff = CopDEM - (LiDAR + correction), same sign convention as
+     error_single_m and the previous raster version.
+  5. Sanity-clip |diff| > 100 m -> nodata (same defensive guard as
+     before, for the same reason: the EVRF2000 Austria grid produces
+     implausible values outside Austria's real border).
+
+Output: ONE GeoTIFF (data/dem_diff_lidar_10m.tif), tiled + compressed +
+with overviews for fast QGIS rendering — no VRT-mosaic trick needed this
+time, since (unlike the 40 misaligned CopDEM chunks before) there's now
+exactly one output grid.
 """
 from pathlib import Path
 
 import _rasterio_compat  # noqa: F401
 import numpy as np
 import rasterio
-from rasterio.warp import Resampling, reproject
-from scipy.interpolate import RegularGridInterpolator
+from pyproj import Transformer
+from rasterio.enums import Resampling
+from rasterio.vrt import WarpedVRT
+from rasterio.windows import Window, transform as window_transform
 
-from build_dem_vrt import build_vrt
 from vertical_datum import EGM2008, SOURCE_VERTICAL_CRS, ellipsoidal_to_geoid, geoid_to_ellipsoidal
 
 ROOT_DIR = Path(__file__).parent.parent
-DEM_DIR = ROOT_DIR / "data" / "dem_tiles"
+COPDEM_VRT_PATH = ROOT_DIR / "data" / "dem_mosaic.vrt"
 LIDAR_PATH = ROOT_DIR / "data" / "dem_tiles" / "austria_localDEM" / "dhm_at_lamb_10m_2018.tif"
-OUTPUT_DIR = ROOT_DIR / "data" / "dem_diff_lidar"
-OUTPUT_VRT = ROOT_DIR / "data" / "dem_diff_lidar_mosaic.vrt"
+OUTPUT_PATH = ROOT_DIR / "data" / "dem_diff_lidar_10m.tif"
 
-COUNTRY_VERTICAL_EPSG = SOURCE_VERTICAL_CRS["AT"]
-COARSE_GRID_STEP_PX = 50  # ~1.5km spacing at 30m resolution - geoid separation is smooth over km
-SANITY_CLIP_M = 100  # |diff| beyond this is treated as an artifact, not real signal
+COUNTRY_VERTICAL_EPSG = SOURCE_VERTICAL_CRS["AT_LIDAR_DHM"]  # GHA (EPSG:5778) - see vertical_datum.py
+COARSE_GRID_STEP_PX = 150  # ~1.5km spacing at 10m resolution - same physical spacing as before
+SANITY_CLIP_M = 100
+BLOCK_SIZE = 2048  # pixels per side, per processing block
 
-
-def _chunk_files(dem_dir=DEM_DIR):
-    return sorted(dem_dir.glob("dem_*.tif"))
+_to_wgs84 = Transformer.from_crs("EPSG:31287", "EPSG:4326", always_xy=True)
 
 
-def _correction_grid(transform, height, width):
-    """EVRF2000 Austria -> EGM2008 correction (metres) at every (row, col),
-    computed on a coarse grid and bilinearly interpolated to full
-    resolution. geoid_to_ellipsoidal(...,0) + ellipsoidal_to_geoid(...)
-    gives the pure positional offset (height cancels out - see
-    extract_lidar.py's docstring for the same reasoning)."""
+def _correction_grid_31287(block_transform, height, width):
+    """Same coarse-grid + bilinear-interpolation approach as the previous
+    version, adapted for a source transform in EPSG:31287 (not 4326) -
+    coordinates are converted to WGS84 lon/lat before the vertical_datum
+    calls, which expect lon/lat."""
+    from scipy.interpolate import RegularGridInterpolator
+
     rows_coarse = np.arange(0, height, COARSE_GRID_STEP_PX)
     if rows_coarse[-1] != height - 1:
         rows_coarse = np.append(rows_coarse, height - 1)
@@ -62,8 +87,8 @@ def _correction_grid(transform, height, width):
         cols_coarse = np.append(cols_coarse, width - 1)
 
     rr, cc = np.meshgrid(rows_coarse, cols_coarse, indexing="ij")
-    xs, ys = rasterio.transform.xy(transform, rr.ravel(), cc.ravel())
-    lons, lats = np.array(xs), np.array(ys)
+    xs, ys = rasterio.transform.xy(block_transform, rr.ravel(), cc.ravel())
+    lons, lats = _to_wgs84.transform(np.array(xs), np.array(ys))
     zeros = np.zeros_like(lons)
 
     h_ellip = geoid_to_ellipsoidal(lons, lats, zeros, COUNTRY_VERTICAL_EPSG)
@@ -78,70 +103,71 @@ def _correction_grid(transform, height, width):
     return interpolator(points).reshape(height, width)
 
 
-def process_chunk(chunk_path, lidar_src, output_dir=OUTPUT_DIR):
-    with rasterio.open(chunk_path) as copdem_src:
-        copdem = copdem_src.read(1, masked=True)
-        transform = copdem_src.transform
-        crs = copdem_src.crs
-        height, width = copdem_src.shape
+def run(lidar_path=LIDAR_PATH, copdem_vrt_path=COPDEM_VRT_PATH, output_path=OUTPUT_PATH,
+        limit_written_blocks=None, row_range=None):
+    """limit_written_blocks/row_range: for testing on a subset before a full
+    run - not used in normal operation (both None)."""
+    with rasterio.open(lidar_path) as lidar_src, rasterio.open(copdem_vrt_path) as copdem_src:
+        with WarpedVRT(copdem_src, crs=lidar_src.crs, transform=lidar_src.transform,
+                        width=lidar_src.width, height=lidar_src.height,
+                        resampling=Resampling.bilinear, src_nodata=np.nan, nodata=np.nan) as copdem_warped:
 
-        lidar_resampled = np.full((height, width), np.nan, dtype="float32")
-        reproject(
-            source=rasterio.band(lidar_src, 1),
-            destination=lidar_resampled,
-            src_transform=lidar_src.transform,
-            src_crs=lidar_src.crs,
-            src_nodata=lidar_src.nodata,
-            dst_transform=transform,
-            dst_crs=crs,
-            dst_nodata=np.nan,
-            resampling=Resampling.average,
-        )
+            profile = lidar_src.profile.copy()
+            profile.update(dtype="float32", nodata=np.nan, compress="deflate",
+                            tiled=True, blockxsize=256, blockysize=256, bigtiff="YES")
 
-        valid_lidar = ~np.isnan(lidar_resampled)
-        if not valid_lidar.any():
-            return None  # this chunk has no LiDAR coverage at all (outside Austria)
+            height, width = lidar_src.height, lidar_src.width
+            row_start, row_end = row_range if row_range else (0, height)
+            n_blocks_total = ((height + BLOCK_SIZE - 1) // BLOCK_SIZE) * ((width + BLOCK_SIZE - 1) // BLOCK_SIZE)
+            block_i = 0
+            written_blocks = 0
 
-        correction = _correction_grid(transform, height, width)
-        lidar_egm2008 = lidar_resampled + correction
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with rasterio.open(output_path, "w", **profile) as dst:
+                for row_off in range(row_start, row_end, BLOCK_SIZE):
+                    h = min(BLOCK_SIZE, height - row_off)
+                    for col_off in range(0, width, BLOCK_SIZE):
+                        if limit_written_blocks is not None and written_blocks >= limit_written_blocks:
+                            break
+                        w = min(BLOCK_SIZE, width - col_off)
+                        block_i += 1
+                        window = Window(col_off, row_off, w, h)
 
-        copdem_filled = np.ma.filled(copdem.astype("float64"), np.nan)
-        diff = copdem_filled - lidar_egm2008
-        diff = np.where(np.abs(diff) > SANITY_CLIP_M, np.nan, diff).astype("float32")
-        diff = np.where(valid_lidar, diff, np.nan).astype("float32")
+                        lidar_block = lidar_src.read(1, window=window, masked=True)
+                        if lidar_block.mask.all():
+                            continue  # no LiDAR coverage in this block - leave as nodata
 
-        if np.all(np.isnan(diff)):
-            return None
+                        copdem_block = copdem_warped.read(1, window=window)
+                        if np.all(np.isnan(copdem_block)):
+                            continue
 
-        output_dir.mkdir(parents=True, exist_ok=True)
-        out_path = output_dir / chunk_path.name.replace("dem_", "diff_")
-        profile = copdem_src.profile.copy()
-        profile.update(dtype="float32", nodata=np.nan, compress="deflate")
-        with rasterio.open(out_path, "w", **profile) as dst:
-            dst.write(diff, 1)
-        return out_path
+                        block_tf = window_transform(window, lidar_src.transform)
+                        correction = _correction_grid_31287(block_tf, h, w)
 
+                        lidar_valid = ~lidar_block.mask
+                        lidar_filled = np.ma.filled(lidar_block.astype("float64"), np.nan)
+                        lidar_egm2008 = lidar_filled + correction
 
-def run(dem_dir=DEM_DIR, lidar_path=LIDAR_PATH, output_dir=OUTPUT_DIR):
-    chunks = _chunk_files(dem_dir)
-    print(f"{len(chunks)} CopDEM chunks to process against {lidar_path.name}")
-    written = []
-    skipped = []
-    with rasterio.open(lidar_path) as lidar_src:
-        for i, chunk_path in enumerate(chunks, 1):
-            out_path = process_chunk(chunk_path, lidar_src, output_dir)
-            if out_path:
-                written.append(out_path)
-                print(f"  [{i}/{len(chunks)}] {chunk_path.name} -> {out_path.name}")
-            else:
-                skipped.append(chunk_path)
-                print(f"  [{i}/{len(chunks)}] {chunk_path.name} -> skipped (no LiDAR coverage)")
-    print(f"wrote {len(written)} diff chunks, skipped {len(skipped)} (outside LiDAR coverage)")
+                        diff = copdem_block.astype("float64") - lidar_egm2008
+                        diff = np.where(np.abs(diff) > SANITY_CLIP_M, np.nan, diff)
+                        diff = np.where(lidar_valid, diff, np.nan).astype("float32")
 
-    if written:
-        build_vrt(dem_dir=output_dir, output_vrt=OUTPUT_VRT, glob_pattern="diff_*.tif",
-                  source_subdir=output_dir.name)
-    return written
+                        if np.all(np.isnan(diff)):
+                            continue
+
+                        dst.write(diff, 1, window=window)
+                        written_blocks += 1
+
+                        if block_i % 20 == 0 or block_i == n_blocks_total:
+                            print(f"  block {block_i}/{n_blocks_total} "
+                                  f"({written_blocks} with data so far)", flush=True)
+
+                print("building overviews...", flush=True)
+                dst.build_overviews([4, 8, 16, 32, 64], Resampling.average)
+                dst.update_tags(ns="rio_overview", resampling="average")
+
+    print(f"wrote {output_path} ({written_blocks}/{n_blocks_total} blocks had data)")
+    return output_path
 
 
 if __name__ == "__main__":

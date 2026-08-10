@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.44.13-Solothurn" projectname="CopDem - Austria DEM Validation" saveUser="arnis" saveDateTime="2026-08-10T16:20:40" saveUserFull="Arnis Kadakovskis">
+<qgis version="3.44.13-Solothurn" projectname="CopDem - Austria DEM Validation" saveUser="arnis" saveDateTime="2026-08-10T16:49:49" saveUserFull="Arnis Kadakovskis">
   <homePath path=""/>
   <title>CopDem - Austria DEM Validation</title>
   <transaction mode="Disabled"/>
@@ -35,7 +35,12 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer source="./data/obstacles/austria/obstacles_dem_diff.geojson" legend_exp="" expanded="1" id="obstacles_diff_9cb8f72c" patch_size="0,0" providerKey="ogr" checked="Qt::Checked" legend_split_behavior="0" name="DEM vs obstacle base - difference (error_single_m)">
+    <layer-tree-layer source="./data/obstacles/austria/obstacles_dem_diff.geojson" legend_exp="" expanded="1" id="obstacles_dem_diff_d5d7a42d_5cf9_431e_808b_1aeaec158f25" patch_size="-1,-1" providerKey="ogr" checked="Qt::Checked" legend_split_behavior="0" name="LidarDEM minus obstacle base">
+      <customproperties>
+        <Option/>
+      </customproperties>
+    </layer-tree-layer>
+    <layer-tree-layer source="./data/obstacles/austria/obstacles_dem_diff.geojson" legend_exp="" expanded="1" id="obstacles_diff_9cb8f72c" patch_size="0,0" providerKey="ogr" checked="Qt::Checked" legend_split_behavior="0" name="CopDEM minus obstacle base ">
       <customproperties>
         <Option/>
       </customproperties>
@@ -45,7 +50,7 @@
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="./data/dem_diff_lidar_mosaic.vrt" legend_exp="" expanded="0" id="lidar_diff_mosaic_a4f002d0" patch_size="0,0" providerKey="gdal" checked="Qt::Checked" legend_split_behavior="0" name="CopDEM - Austria LiDAR difference (m)">
+    <layer-tree-layer source="./data/dem_diff_lidar_mosaic.vrt" legend_exp="" expanded="1" id="lidar_diff_mosaic_a4f002d0" patch_size="0,0" providerKey="gdal" checked="Qt::Checked" legend_split_behavior="0" name="CopDEM - Austria LiDAR difference (m)">
       <customproperties>
         <Option/>
       </customproperties>
@@ -55,7 +60,7 @@
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="./data/dem_mosaic.vrt" legend_exp="" expanded="0" id="dem_mosaic_d903272d" patch_size="0,0" providerKey="gdal" checked="Qt::Unchecked" legend_split_behavior="0" name="Copernicus DEM GLO-30 (Austria mosaic)">
+    <layer-tree-layer source="./data/dem_mosaic.vrt" legend_exp="" expanded="1" id="dem_mosaic_d903272d" patch_size="0,0" providerKey="gdal" checked="Qt::Checked" legend_split_behavior="0" name="Copernicus DEM GLO-30 (Austria mosaic)">
       <customproperties>
         <Option/>
       </customproperties>
@@ -72,20 +77,23 @@
       <item>dem_mosaic_d903272d</item>
       <item>ESRI_Satellite__ArcGIS_World_Imagery__610f1c8e_5232_4679_ab75_a215dec75d57</item>
       <item>dhm_at_lamb_10m_2018_316a46a8_f991_4de9_8310_2cac745ebeb7</item>
+      <item>obstacles_dem_diff_d5d7a42d_5cf9_431e_808b_1aeaec158f25</item>
     </custom-order>
   </layer-tree-group>
   <snapping-settings mode="3" maxScale="0" enabled="1" minScale="0" type="1" self-snapping="0" unit="2" intersection-snapping="0" scaleDependencyMode="0" tolerance="0">
-    <individual-layer-settings/>
+    <individual-layer-settings>
+      <layer-setting maxScale="0" enabled="0" minScale="0" type="1" id="obstacles_dem_diff_d5d7a42d_5cf9_431e_808b_1aeaec158f25" tolerance="12" units="1"/>
+    </individual-layer-settings>
   </snapping-settings>
   <relations/>
   <polymorphicRelations/>
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>meters</units>
     <extent>
-      <xmin>1646166.19461874198168516</xmin>
-      <ymin>5965954.79249595385044813</ymin>
-      <xmax>1649681.89025571476668119</xmax>
-      <ymax>5967787.10051016788929701</ymax>
+      <xmin>1374916.27856090804561973</xmin>
+      <ymin>6034399.4702976094558835</ymin>
+      <xmax>1375355.74051552871242166</xmax>
+      <ymax>6034628.50879938807338476</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -106,7 +114,12 @@
   </mapcanvas>
   <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="DEM vs obstacle base - difference (error_single_m)">
+    <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="LidarDEM minus obstacle base">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile layerid="obstacles_dem_diff_d5d7a42d_5cf9_431e_808b_1aeaec158f25" isInOverview="0" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="CopDEM minus obstacle base ">
       <filegroup open="true" hidden="false">
         <legendlayerfile layerid="obstacles_diff_9cb8f72c" isInOverview="0" visible="1"/>
       </filegroup>
@@ -116,8 +129,8 @@
         <legendlayerfile layerid="obstacles_points_9a5ca33b" isInOverview="0" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" showFeatureCount="0" open="false" checked="Qt::Checked" name="CopDEM - Austria LiDAR difference (m)">
-      <filegroup open="false" hidden="false">
+    <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="CopDEM - Austria LiDAR difference (m)">
+      <filegroup open="true" hidden="false">
         <legendlayerfile layerid="lidar_diff_mosaic_a4f002d0" isInOverview="0" visible="1"/>
       </filegroup>
     </legendlayer>
@@ -126,9 +139,9 @@
         <legendlayerfile layerid="dhm_at_lamb_10m_2018_316a46a8_f991_4de9_8310_2cac745ebeb7" isInOverview="0" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" showFeatureCount="0" open="false" checked="Qt::Unchecked" name="Copernicus DEM GLO-30 (Austria mosaic)">
-      <filegroup open="false" hidden="false">
-        <legendlayerfile layerid="dem_mosaic_d903272d" isInOverview="0" visible="0"/>
+    <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="Copernicus DEM GLO-30 (Austria mosaic)">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile layerid="dem_mosaic_d903272d" isInOverview="0" visible="1"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="ESRI Satellite (ArcGIS/World_Imagery)">
@@ -138,6 +151,31 @@
     </legendlayer>
   </legend>
   <mapViewDocks/>
+  <mapcanvas annotationsVisible="1" name="mAreaCanvas">
+    <units>degrees</units>
+    <extent>
+      <xmin>179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</xmin>
+      <ymin>179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</ymin>
+      <xmax>-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</xmax>
+      <ymax>-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys nativeFormat="Wkt">
+        <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],MEMBER["World Geodetic System 1984 (G2296)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
+        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+        <srsid>3452</srsid>
+        <srid>4326</srid>
+        <authid>EPSG:4326</authid>
+        <description>WGS 84</description>
+        <projectionacronym>longlat</projectionacronym>
+        <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+        <geographicflag>true</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+    <expressionContextScope/>
+  </mapcanvas>
   <main-annotation-layer autoRefreshMode="Disabled" maxScale="0" legendPlaceholderImage="" minScale="0" type="annotation" autoRefreshTime="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0">
     <id>Annotations_f3a5bf9a_be1b_4359_8441_964955cd296c</id>
     <datasource></datasource>
@@ -432,6 +470,15 @@
         <type></type>
         <title></title>
         <abstract></abstract>
+        <contact>
+          <name></name>
+          <organization></organization>
+          <position></position>
+          <voice></voice>
+          <fax></fax>
+          <email></email>
+          <role></role>
+        </contact>
         <links/>
         <dates/>
         <fees></fees>
@@ -449,7 +496,15 @@
             <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
-        <extent/>
+        <extent>
+          <spatial miny="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" maxx="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" crs="EPSG:4326" dimensions="2" maxz="0" minz="0" maxy="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" minx="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368"/>
+          <temporal>
+            <period>
+              <start></start>
+              <end></end>
+            </period>
+          </temporal>
+        </extent>
       </resourceMetadata>
       <provider>gdal</provider>
       <noData>
@@ -563,6 +618,9 @@
       </elevation>
       <customproperties>
         <Option type="Map">
+          <Option type="bool" name="WMSBackgroundLayer" value="false"/>
+          <Option type="bool" name="WMSPublishDataSourceUrl" value="false"/>
+          <Option type="int" name="embeddedWidgets/count" value="0"/>
           <Option type="QString" name="identify/format" value="Value"/>
         </Option>
       </customproperties>
@@ -578,37 +636,34 @@
         <provider>
           <resampling zoomedInResamplingMethod="nearestNeighbour" enabled="false" maxOversampling="2" zoomedOutResamplingMethod="nearestNeighbour"/>
         </provider>
-        <rasterrenderer classificationMin="102.51467895507813" type="singlebandpseudocolor" band="1" opacity="1" alphaBand="-1" nodataColor="" classificationMax="3922.041748046875">
+        <rasterrenderer type="singlebandgray" gradient="BlackToWhite" opacity="1" alphaBand="-1" grayBand="1" nodataColor="">
+          <rasterTransparency/>
           <minMaxOrigin>
-            <limits>None</limits>
+            <limits>MinMax</limits>
             <extent>WholeRaster</extent>
             <statAccuracy>Estimated</statAccuracy>
             <cumulativeCutLower>0.02</cumulativeCutLower>
             <cumulativeCutUpper>0.98</cumulativeCutUpper>
             <stdDevFactor>2</stdDevFactor>
           </minMaxOrigin>
-          <rastershader>
-            <colorrampshader minimumValue="102.51467895507813" labelPrecision="6" clip="0" colorRampType="INTERPOLATED" classificationMode="1" maximumValue="3922.041748046875">
-              <item color="#3288bd" alpha="255" label="103 m" value="102.51"/>
-              <item color="#abdda4" alpha="255" label="1057 m" value="1057.4"/>
-              <item color="#ffffbf" alpha="255" label="2012 m" value="2012.28"/>
-              <item color="#fdae61" alpha="255" label="2967 m" value="2967.16"/>
-              <item color="#d53e4f" alpha="255" label="3922 m" value="3922.04"/>
-              <rampLegendSettings suffix="" minimumLabel="" useContinuousLegend="1" direction="0" maximumLabel="" prefix="" orientation="2">
-                <numericFormat id="basic">
-                  <Option type="Map">
-                    <Option type="invalid" name="decimal_separator"/>
-                    <Option type="int" name="decimals" value="6"/>
-                    <Option type="int" name="rounding_type" value="0"/>
-                    <Option type="bool" name="show_plus" value="false"/>
-                    <Option type="bool" name="show_thousand_separator" value="true"/>
-                    <Option type="bool" name="show_trailing_zeros" value="false"/>
-                    <Option type="invalid" name="thousand_separator"/>
-                  </Option>
-                </numericFormat>
-              </rampLegendSettings>
-            </colorrampshader>
-          </rastershader>
+          <contrastEnhancement>
+            <minValue>175.712</minValue>
+            <maxValue>3594.47</maxValue>
+            <algorithm>StretchToMinimumMaximum</algorithm>
+          </contrastEnhancement>
+          <rampLegendSettings suffix="" minimumLabel="" useContinuousLegend="1" direction="0" maximumLabel="" prefix="" orientation="2">
+            <numericFormat id="basic">
+              <Option type="Map">
+                <Option type="invalid" name="decimal_separator"/>
+                <Option type="int" name="decimals" value="6"/>
+                <Option type="int" name="rounding_type" value="0"/>
+                <Option type="bool" name="show_plus" value="false"/>
+                <Option type="bool" name="show_thousand_separator" value="true"/>
+                <Option type="bool" name="show_trailing_zeros" value="false"/>
+                <Option type="invalid" name="thousand_separator"/>
+              </Option>
+            </numericFormat>
+          </rampLegendSettings>
         </rasterrenderer>
         <brightnesscontrast contrast="0" gamma="1" brightness="0"/>
         <huesaturation colorizeOn="0" colorizeRed="255" colorizeGreen="128" saturation="0" invertColors="0" colorizeBlue="128" colorizeStrength="100" grayscaleMode="0"/>
@@ -871,6 +926,15 @@
         <type></type>
         <title></title>
         <abstract></abstract>
+        <contact>
+          <name></name>
+          <organization></organization>
+          <position></position>
+          <voice></voice>
+          <fax></fax>
+          <email></email>
+          <role></role>
+        </contact>
         <links/>
         <dates/>
         <fees></fees>
@@ -888,7 +952,15 @@
             <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
-        <extent/>
+        <extent>
+          <spatial miny="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" maxx="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" crs="EPSG:4326" dimensions="2" maxz="0" minz="0" maxy="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" minx="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368"/>
+          <temporal>
+            <period>
+              <start></start>
+              <end></end>
+            </period>
+          </temporal>
+        </extent>
       </resourceMetadata>
       <provider>gdal</provider>
       <noData>
@@ -1002,6 +1074,9 @@
       </elevation>
       <customproperties>
         <Option type="Map">
+          <Option type="bool" name="WMSBackgroundLayer" value="false"/>
+          <Option type="bool" name="WMSPublishDataSourceUrl" value="false"/>
+          <Option type="int" name="embeddedWidgets/count" value="0"/>
           <Option type="QString" name="identify/format" value="Value"/>
         </Option>
       </customproperties>
@@ -1018,6 +1093,7 @@
           <resampling zoomedInResamplingMethod="nearestNeighbour" enabled="false" maxOversampling="2" zoomedOutResamplingMethod="nearestNeighbour"/>
         </provider>
         <rasterrenderer classificationMin="-30" type="singlebandpseudocolor" band="1" opacity="1" alphaBand="-1" nodataColor="" classificationMax="30">
+          <rasterTransparency/>
           <minMaxOrigin>
             <limits>None</limits>
             <extent>WholeRaster</extent>
@@ -1028,6 +1104,16 @@
           </minMaxOrigin>
           <rastershader>
             <colorrampshader minimumValue="-30" labelPrecision="1" clip="0" colorRampType="INTERPOLATED" classificationMode="1" maximumValue="30">
+              <colorramp type="gradient" name="[source]">
+                <Option type="Map">
+                  <Option type="QString" name="color1" value="250,250,250,255,rgb:0.9803922,0.9803922,0.9803922,1"/>
+                  <Option type="QString" name="color2" value="5,5,5,255,rgb:0.0196078,0.0196078,0.0196078,1"/>
+                  <Option type="QString" name="direction" value="ccw"/>
+                  <Option type="QString" name="discrete" value="0"/>
+                  <Option type="QString" name="rampType" value="gradient"/>
+                  <Option type="QString" name="spec" value="rgb"/>
+                </Option>
+              </colorramp>
               <item color="#2166ac" alpha="255" label="-30 m (CopDEM well below LiDAR)" value="-30"/>
               <item color="#67a9cf" alpha="255" label="-15 m" value="-15"/>
               <item color="#f7f7f7" alpha="255" label="0 m" value="0"/>
@@ -1069,9 +1155,1084 @@
         <xmax>17.02564445999999876</xmax>
         <ymax>48.95211111999999787</ymax>
       </wgs84extent>
+      <id>obstacles_dem_diff_d5d7a42d_5cf9_431e_808b_1aeaec158f25</id>
+      <datasource>./data/obstacles/austria/obstacles_dem_diff.geojson</datasource>
+      <layername>LidarDEM minus obstacle base</layername>
+      <srs>
+        <spatialrefsys nativeFormat="Wkt">
+          <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],MEMBER["World Geodetic System 1984 (G2296)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
+          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+          <srsid>3452</srsid>
+          <srid>4326</srid>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title></title>
+        <abstract></abstract>
+        <contact>
+          <name></name>
+          <organization></organization>
+          <position></position>
+          <voice></voice>
+          <fax></fax>
+          <email></email>
+          <role></role>
+        </contact>
+        <links/>
+        <dates/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys nativeFormat="Wkt">
+            <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],MEMBER["World Geodetic System 1984 (G2296)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
+            <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+            <srsid>3452</srsid>
+            <srid>4326</srid>
+            <authid>EPSG:4326</authid>
+            <description>WGS 84</description>
+            <projectionacronym>longlat</projectionacronym>
+            <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+            <geographicflag>true</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent>
+          <spatial miny="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" maxx="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" crs="EPSG:4326" dimensions="2" maxz="0" minz="0" maxy="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" minx="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368"/>
+          <temporal>
+            <period>
+              <start></start>
+              <end></end>
+            </period>
+          </temporal>
+        </extent>
+      </resourceMetadata>
+      <provider encoding="UTF-8">ogr</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+        <Private>0</Private>
+      </flags>
+      <temporal mode="0" enabled="0" endExpression="" limitMode="0" fixedDuration="0" endField="" accumulate="0" startExpression="" startField="" durationField="elev_top_amsl_m" durationUnit="min">
+        <fixedRange>
+          <start></start>
+          <end></end>
+        </fixedRange>
+      </temporal>
+      <elevation clamping="Terrain" zscale="1" symbology="Line" type="IndividualFeatures" showMarkerSymbolInSurfacePlots="0" extrusionEnabled="0" zoffset="0" binding="Centroid" customToleranceEnabled="0" extrusion="0" respectLayerSymbol="1">
+        <data-defined-properties>
+          <Option type="Map">
+            <Option type="QString" name="name" value=""/>
+            <Option name="properties"/>
+            <Option type="QString" name="type" value="collection"/>
+          </Option>
+        </data-defined-properties>
+        <profileLineSymbol>
+          <symbol type="line" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="" force_rhr="0">
+            <data_defined_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </data_defined_properties>
+            <layer pass="0" enabled="1" locked="0" id="{a4f392a5-f2ee-4b55-b5d2-d2aa04e42a32}" class="SimpleLine">
+              <Option type="Map">
+                <Option type="QString" name="align_dash_pattern" value="0"/>
+                <Option type="QString" name="capstyle" value="square"/>
+                <Option type="QString" name="customdash" value="5;2"/>
+                <Option type="QString" name="customdash_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="customdash_unit" value="MM"/>
+                <Option type="QString" name="dash_pattern_offset" value="0"/>
+                <Option type="QString" name="dash_pattern_offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="dash_pattern_offset_unit" value="MM"/>
+                <Option type="QString" name="draw_inside_polygon" value="0"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="line_color" value="243,166,178,255,rgb:0.9529412,0.6509804,0.6980392,1"/>
+                <Option type="QString" name="line_style" value="solid"/>
+                <Option type="QString" name="line_width" value="0.6"/>
+                <Option type="QString" name="line_width_unit" value="MM"/>
+                <Option type="QString" name="offset" value="0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="ring_filter" value="0"/>
+                <Option type="QString" name="trim_distance_end" value="0"/>
+                <Option type="QString" name="trim_distance_end_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="trim_distance_end_unit" value="MM"/>
+                <Option type="QString" name="trim_distance_start" value="0"/>
+                <Option type="QString" name="trim_distance_start_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="trim_distance_start_unit" value="MM"/>
+                <Option type="QString" name="tweak_dash_pattern_on_corners" value="0"/>
+                <Option type="QString" name="use_custom_dash" value="0"/>
+                <Option type="QString" name="width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+              </Option>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </profileLineSymbol>
+        <profileFillSymbol>
+          <symbol type="fill" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="" force_rhr="0">
+            <data_defined_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </data_defined_properties>
+            <layer pass="0" enabled="1" locked="0" id="{b88ec6ae-7886-4d27-b66b-4901e91a2c79}" class="SimpleFill">
+              <Option type="Map">
+                <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="color" value="243,166,178,255,rgb:0.9529412,0.6509804,0.6980392,1"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="offset" value="0,0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="outline_color" value="174,119,127,255,rgb:0.6806592,0.4649729,0.4985885,1"/>
+                <Option type="QString" name="outline_style" value="solid"/>
+                <Option type="QString" name="outline_width" value="0.2"/>
+                <Option type="QString" name="outline_width_unit" value="MM"/>
+                <Option type="QString" name="style" value="solid"/>
+              </Option>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </profileFillSymbol>
+        <profileMarkerSymbol>
+          <symbol type="marker" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="" force_rhr="0">
+            <data_defined_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </data_defined_properties>
+            <layer pass="0" enabled="1" locked="0" id="{3079f637-f985-49e5-9ead-b0b1ba599fdc}" class="SimpleMarker">
+              <Option type="Map">
+                <Option type="QString" name="angle" value="0"/>
+                <Option type="QString" name="cap_style" value="square"/>
+                <Option type="QString" name="color" value="243,166,178,255,rgb:0.9529412,0.6509804,0.6980392,1"/>
+                <Option type="QString" name="horizontal_anchor_point" value="1"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="name" value="diamond"/>
+                <Option type="QString" name="offset" value="0,0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="outline_color" value="174,119,127,255,rgb:0.6806592,0.4649729,0.4985885,1"/>
+                <Option type="QString" name="outline_style" value="solid"/>
+                <Option type="QString" name="outline_width" value="0.2"/>
+                <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="outline_width_unit" value="MM"/>
+                <Option type="QString" name="scale_method" value="diameter"/>
+                <Option type="QString" name="size" value="3"/>
+                <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="size_unit" value="MM"/>
+                <Option type="QString" name="vertical_anchor_point" value="1"/>
+              </Option>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </profileMarkerSymbol>
+      </elevation>
+      <renderer-v2 referencescale="-1" type="singleSymbol" forceraster="0" enableorderby="0" symbollevels="0">
+        <symbols>
+          <symbol type="marker" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="0" force_rhr="0">
+            <data_defined_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </data_defined_properties>
+            <layer pass="0" enabled="1" locked="0" id="{5825859b-09f6-42cf-8177-f29228b2aff6}" class="SimpleMarker">
+              <Option type="Map">
+                <Option type="QString" name="angle" value="0"/>
+                <Option type="QString" name="cap_style" value="square"/>
+                <Option type="QString" name="color" value="141,90,153,255,rgb:0.5529412,0.3529412,0.6,1"/>
+                <Option type="QString" name="horizontal_anchor_point" value="1"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="name" value="circle"/>
+                <Option type="QString" name="offset" value="0,0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="outline_color" value="35,35,35,255,rgb:0.1372549,0.1372549,0.1372549,1"/>
+                <Option type="QString" name="outline_style" value="solid"/>
+                <Option type="QString" name="outline_width" value="0"/>
+                <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="outline_width_unit" value="MM"/>
+                <Option type="QString" name="scale_method" value="diameter"/>
+                <Option type="QString" name="size" value="2"/>
+                <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="size_unit" value="MM"/>
+                <Option type="QString" name="vertical_anchor_point" value="1"/>
+              </Option>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+        <data-defined-properties>
+          <Option type="Map">
+            <Option type="QString" name="name" value=""/>
+            <Option name="properties"/>
+            <Option type="QString" name="type" value="collection"/>
+          </Option>
+        </data-defined-properties>
+      </renderer-v2>
+      <selection mode="Default">
+        <selectionColor invalid="1"/>
+        <selectionSymbol>
+          <symbol type="marker" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="" force_rhr="0">
+            <data_defined_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </data_defined_properties>
+            <layer pass="0" enabled="1" locked="0" id="{08a6a9c8-1ba1-4cf7-ba1a-151083330964}" class="SimpleMarker">
+              <Option type="Map">
+                <Option type="QString" name="angle" value="0"/>
+                <Option type="QString" name="cap_style" value="square"/>
+                <Option type="QString" name="color" value="255,0,0,255,rgb:1,0,0,1"/>
+                <Option type="QString" name="horizontal_anchor_point" value="1"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="name" value="circle"/>
+                <Option type="QString" name="offset" value="0,0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="outline_color" value="35,35,35,255,rgb:0.1372549,0.1372549,0.1372549,1"/>
+                <Option type="QString" name="outline_style" value="solid"/>
+                <Option type="QString" name="outline_width" value="0"/>
+                <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="outline_width_unit" value="MM"/>
+                <Option type="QString" name="scale_method" value="diameter"/>
+                <Option type="QString" name="size" value="2"/>
+                <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="size_unit" value="MM"/>
+                <Option type="QString" name="vertical_anchor_point" value="1"/>
+              </Option>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </selectionSymbol>
+      </selection>
+      <labeling type="simple">
+        <settings calloutType="simple">
+          <text-style fontLetterSpacing="0" fontUnderline="0" fontSizeUnit="Point" fontItalic="0" fontFamily="MS Shell Dlg 2" forcedBold="0" stretchFactor="100" fieldName="'Lid 1px: ' || round(&quot;error_single_lidar_m&quot; , 1) || ' m' || char(10) || '5x5med: ' || coalesce(round(&quot;error_5x5_median_lidar_m&quot;, 1) || ' m', 'n/a')" textOpacity="1" capitalization="0" textOrientation="horizontal" multilineHeight="1" fontSize="8" isExpression="1" fontWordSpacing="0" legendString="Aa" previewBkgrdColor="255,255,255,255,rgb:1,1,1,1" fontKerning="1" fontStrikeout="0" fontWeight="50" forcedItalic="0" blendMode="0" tabStopDistance="80" tabStopDistanceMapUnitScale="3x:0,0,0,0,0,0" useSubstitutions="0" fontSizeMapUnitScale="3x:0,0,0,0,0,0" multilineHeightUnit="Percentage" namedStyle="Regular" allowHtml="0" textColor="0,0,0,255,rgb:0,0,0,1" tabStopDistanceUnit="Point">
+            <families/>
+            <text-buffer bufferSizeUnits="MM" bufferColor="255,255,255,255,rgb:1,1,1,1" bufferSize="1" bufferJoinStyle="128" bufferDraw="1" bufferBlendMode="0" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferNoFill="0" bufferOpacity="1"/>
+            <text-mask maskType="0" maskSize2="1.5" maskSizeUnits="MM" maskEnabled="0" maskJoinStyle="128" maskSizeMapUnitScale="3x:0,0,0,0,0,0" maskedSymbolLayers="" maskSize="1.5" maskOpacity="1"/>
+            <background shapeBorderWidthMapUnitScale="3x:0,0,0,0,0,0" shapeOffsetUnit="Point" shapeSizeType="0" shapeSizeUnit="Point" shapeDraw="0" shapeBorderWidth="0" shapeRadiiY="0" shapeSizeMapUnitScale="3x:0,0,0,0,0,0" shapeOpacity="1" shapeOffsetX="0" shapeType="0" shapeRadiiUnit="Point" shapeSVGFile="" shapeJoinStyle="64" shapeRadiiX="0" shapeSizeY="0" shapeBorderWidthUnit="Point" shapeOffsetMapUnitScale="3x:0,0,0,0,0,0" shapeFillColor="255,255,255,255,rgb:1,1,1,1" shapeBlendMode="0" shapeSizeX="0" shapeRotation="0" shapeOffsetY="0" shapeRotationType="0" shapeBorderColor="128,128,128,255,rgb:0.5019608,0.5019608,0.5019608,1" shapeRadiiMapUnitScale="3x:0,0,0,0,0,0">
+              <symbol type="marker" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="markerSymbol" force_rhr="0">
+                <data_defined_properties>
+                  <Option type="Map">
+                    <Option type="QString" name="name" value=""/>
+                    <Option name="properties"/>
+                    <Option type="QString" name="type" value="collection"/>
+                  </Option>
+                </data_defined_properties>
+                <layer pass="0" enabled="1" locked="0" id="" class="SimpleMarker">
+                  <Option type="Map">
+                    <Option type="QString" name="angle" value="0"/>
+                    <Option type="QString" name="cap_style" value="square"/>
+                    <Option type="QString" name="color" value="213,180,60,255,rgb:0.8352941,0.7058824,0.2352941,1"/>
+                    <Option type="QString" name="horizontal_anchor_point" value="1"/>
+                    <Option type="QString" name="joinstyle" value="bevel"/>
+                    <Option type="QString" name="name" value="circle"/>
+                    <Option type="QString" name="offset" value="0,0"/>
+                    <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="offset_unit" value="MM"/>
+                    <Option type="QString" name="outline_color" value="35,35,35,255,rgb:0.1372549,0.1372549,0.1372549,1"/>
+                    <Option type="QString" name="outline_style" value="solid"/>
+                    <Option type="QString" name="outline_width" value="0"/>
+                    <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="outline_width_unit" value="MM"/>
+                    <Option type="QString" name="scale_method" value="diameter"/>
+                    <Option type="QString" name="size" value="2"/>
+                    <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="size_unit" value="MM"/>
+                    <Option type="QString" name="vertical_anchor_point" value="1"/>
+                  </Option>
+                  <data_defined_properties>
+                    <Option type="Map">
+                      <Option type="QString" name="name" value=""/>
+                      <Option name="properties"/>
+                      <Option type="QString" name="type" value="collection"/>
+                    </Option>
+                  </data_defined_properties>
+                </layer>
+              </symbol>
+              <symbol type="fill" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="fillSymbol" force_rhr="0">
+                <data_defined_properties>
+                  <Option type="Map">
+                    <Option type="QString" name="name" value=""/>
+                    <Option name="properties"/>
+                    <Option type="QString" name="type" value="collection"/>
+                  </Option>
+                </data_defined_properties>
+                <layer pass="0" enabled="1" locked="0" id="" class="SimpleFill">
+                  <Option type="Map">
+                    <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="color" value="255,255,255,255,rgb:1,1,1,1"/>
+                    <Option type="QString" name="joinstyle" value="bevel"/>
+                    <Option type="QString" name="offset" value="0,0"/>
+                    <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="offset_unit" value="MM"/>
+                    <Option type="QString" name="outline_color" value="128,128,128,255,rgb:0.5019608,0.5019608,0.5019608,1"/>
+                    <Option type="QString" name="outline_style" value="no"/>
+                    <Option type="QString" name="outline_width" value="0"/>
+                    <Option type="QString" name="outline_width_unit" value="Point"/>
+                    <Option type="QString" name="style" value="solid"/>
+                  </Option>
+                  <data_defined_properties>
+                    <Option type="Map">
+                      <Option type="QString" name="name" value=""/>
+                      <Option name="properties"/>
+                      <Option type="QString" name="type" value="collection"/>
+                    </Option>
+                  </data_defined_properties>
+                </layer>
+              </symbol>
+            </background>
+            <shadow shadowOffsetDist="1" shadowOffsetUnit="MM" shadowOpacity="0.69999999999999996" shadowRadiusAlphaOnly="0" shadowOffsetMapUnitScale="3x:0,0,0,0,0,0" shadowRadiusMapUnitScale="3x:0,0,0,0,0,0" shadowBlendMode="6" shadowDraw="0" shadowOffsetAngle="135" shadowUnder="0" shadowOffsetGlobal="1" shadowScale="100" shadowColor="0,0,0,255,rgb:0,0,0,1" shadowRadiusUnit="MM" shadowRadius="1.5"/>
+            <dd_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </dd_properties>
+            <substitutions/>
+          </text-style>
+          <text-format useMaxLineLengthForAutoWrap="1" decimals="0" addDirectionSymbol="0" leftDirectionSymbol="&lt;" autoWrapLength="0" formatNumbers="0" plussign="0" rightDirectionSymbol=">" wrapChar="" multilineAlign="3" reverseDirectionSymbol="0" placeDirectionSymbol="0"/>
+          <placement maximumDistance="0" rotationUnit="AngleDegrees" lineAnchorType="0" yOffset="1.9000000000000035" maxCurvedCharAngleIn="25" polygonPlacementFlags="2" geometryGenerator="" priority="1" maxCurvedCharAngleOut="-25" rotationAngle="0" layerType="PointGeometry" allowDegraded="0" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" dist="4" distUnits="MM" centroidWhole="0" centroidInside="0" overlapHandling="PreventOverlap" lineAnchorClipping="0" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" offsetUnits="MM" overrunDistance="0" offsetType="0" placement="1" geometryGeneratorType="PointGeometry" prioritization="PreferCloser" geometryGeneratorEnabled="0" xOffset="-3.800000000000002" maximumDistanceUnit="MM" lineAnchorTextPoint="CenterOfText" fitInPolygonOnly="0" preserveRotation="1" distMapUnitScale="3x:0,0,0,0,0,0" placementFlags="0" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" lineAnchorPercent="0.5" overrunDistanceMapUnitScale="3x:0,0,0,0,0,0" repeatDistance="0" repeatDistanceUnits="MM" overrunDistanceUnit="MM" quadOffset="6" maximumDistanceMapUnitScale="3x:0,0,0,0,0,0"/>
+          <rendering limitNumLabels="0" upsidedownLabels="0" scaleVisibility="0" obstacleType="0" maxNumLabels="2000" mergeLines="0" zIndex="0" labelPerPart="0" scaleMin="0" drawLabels="1" unplacedVisibility="0" fontMaxPixelSize="10000" obstacle="0" fontMinPixelSize="3" fontLimitPixelSize="0" obstacleFactor="1" minFeatureSize="0" scaleMax="0"/>
+          <dd_properties>
+            <Option type="Map">
+              <Option type="QString" name="name" value=""/>
+              <Option name="properties"/>
+              <Option type="QString" name="type" value="collection"/>
+            </Option>
+          </dd_properties>
+          <callout type="simple">
+            <Option type="Map">
+              <Option type="QString" name="anchorPoint" value="pole_of_inaccessibility"/>
+              <Option type="int" name="blendMode" value="0"/>
+              <Option type="Map" name="ddProperties">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+              <Option type="bool" name="drawToAllParts" value="false"/>
+              <Option type="QString" name="enabled" value="0"/>
+              <Option type="QString" name="labelAnchorPoint" value="point_on_exterior"/>
+              <Option type="QString" name="lineSymbol" value="&lt;symbol type=&quot;line&quot; frame_rate=&quot;10&quot; alpha=&quot;1&quot; clip_to_extent=&quot;1&quot; is_animated=&quot;0&quot; name=&quot;symbol&quot; force_rhr=&quot;0&quot;>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option type=&quot;QString&quot; name=&quot;name&quot; value=&quot;&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;type&quot; value=&quot;collection&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;layer pass=&quot;0&quot; enabled=&quot;1&quot; locked=&quot;0&quot; id=&quot;{734ddd2d-7f7d-4a0c-b8c9-70d33843259a}&quot; class=&quot;SimpleLine&quot;>&lt;Option type=&quot;Map&quot;>&lt;Option type=&quot;QString&quot; name=&quot;align_dash_pattern&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;capstyle&quot; value=&quot;square&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;customdash&quot; value=&quot;5;2&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;customdash_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;customdash_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;dash_pattern_offset&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;dash_pattern_offset_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;dash_pattern_offset_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;draw_inside_polygon&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;joinstyle&quot; value=&quot;bevel&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_color&quot; value=&quot;60,60,60,255,rgb:0.2352941,0.2352941,0.2352941,1&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_style&quot; value=&quot;solid&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_width&quot; value=&quot;0.3&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_width_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;offset&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;offset_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;offset_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;ring_filter&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_end&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_end_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_end_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_start&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_start_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_start_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;tweak_dash_pattern_on_corners&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;use_custom_dash&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;width_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;/Option>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option type=&quot;QString&quot; name=&quot;name&quot; value=&quot;&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;type&quot; value=&quot;collection&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"/>
+              <Option type="double" name="minLength" value="0"/>
+              <Option type="QString" name="minLengthMapUnitScale" value="3x:0,0,0,0,0,0"/>
+              <Option type="QString" name="minLengthUnit" value="MM"/>
+              <Option type="double" name="offsetFromAnchor" value="0"/>
+              <Option type="QString" name="offsetFromAnchorMapUnitScale" value="3x:0,0,0,0,0,0"/>
+              <Option type="QString" name="offsetFromAnchorUnit" value="MM"/>
+              <Option type="double" name="offsetFromLabel" value="0"/>
+              <Option type="QString" name="offsetFromLabelMapUnitScale" value="3x:0,0,0,0,0,0"/>
+              <Option type="QString" name="offsetFromLabelUnit" value="MM"/>
+            </Option>
+          </callout>
+        </settings>
+      </labeling>
+      <customproperties>
+        <Option type="Map">
+          <Option type="int" name="embeddedWidgets/count" value="0"/>
+          <Option name="variableNames"/>
+          <Option name="variableValues"/>
+        </Option>
+      </customproperties>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks/>
+        <checkConfiguration/>
+      </geometryOptions>
+      <legend showLabelLegend="0" type="default-vector"/>
+      <referencedLayers/>
+      <referencingLayers/>
+      <fieldConfiguration>
+        <field name="id" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="region" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="district" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="location" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="obstacle_type" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="elev_top_amsl_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="elev_base_amsl_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="elev_vertical_crs_epsg" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="elev_base_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="elev_top_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="geoid_correction_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="height_agl_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="day_marking" configurationFlags="NoFlag">
+          <editWidget type="CheckBox">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="lighted" configurationFlags="NoFlag">
+          <editWidget type="CheckBox">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="horizontal_accuracy_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="vertical_accuracy_elev_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="vertical_accuracy_agl_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="dem_single_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_single_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="dem_5x5_min_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="dem_5x5_median_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="dem_5x5_mean_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="dem_5x5_std_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_5x5_min_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_5x5_median_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_5x5_mean_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="capture_signal_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="lidar_single_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_single_lidar_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="lidar_5x5_min_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="lidar_5x5_median_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="lidar_5x5_mean_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="lidar_5x5_std_egm2008_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_5x5_min_lidar_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_5x5_median_lidar_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="error_5x5_mean_lidar_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field name="capture_signal_lidar_m" configurationFlags="NoFlag">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias field="id" index="0" name=""/>
+        <alias field="region" index="1" name=""/>
+        <alias field="district" index="2" name=""/>
+        <alias field="location" index="3" name=""/>
+        <alias field="obstacle_type" index="4" name=""/>
+        <alias field="elev_top_amsl_m" index="5" name=""/>
+        <alias field="elev_base_amsl_m" index="6" name=""/>
+        <alias field="elev_vertical_crs_epsg" index="7" name=""/>
+        <alias field="elev_base_egm2008_m" index="8" name=""/>
+        <alias field="elev_top_egm2008_m" index="9" name=""/>
+        <alias field="geoid_correction_m" index="10" name=""/>
+        <alias field="height_agl_m" index="11" name=""/>
+        <alias field="day_marking" index="12" name=""/>
+        <alias field="lighted" index="13" name=""/>
+        <alias field="horizontal_accuracy_m" index="14" name=""/>
+        <alias field="vertical_accuracy_elev_m" index="15" name=""/>
+        <alias field="vertical_accuracy_agl_m" index="16" name=""/>
+        <alias field="dem_single_egm2008_m" index="17" name=""/>
+        <alias field="error_single_m" index="18" name=""/>
+        <alias field="dem_5x5_min_egm2008_m" index="19" name=""/>
+        <alias field="dem_5x5_median_egm2008_m" index="20" name=""/>
+        <alias field="dem_5x5_mean_egm2008_m" index="21" name=""/>
+        <alias field="dem_5x5_std_egm2008_m" index="22" name=""/>
+        <alias field="error_5x5_min_m" index="23" name=""/>
+        <alias field="error_5x5_median_m" index="24" name=""/>
+        <alias field="error_5x5_mean_m" index="25" name=""/>
+        <alias field="capture_signal_m" index="26" name=""/>
+        <alias field="lidar_single_egm2008_m" index="27" name=""/>
+        <alias field="error_single_lidar_m" index="28" name=""/>
+        <alias field="lidar_5x5_min_egm2008_m" index="29" name=""/>
+        <alias field="lidar_5x5_median_egm2008_m" index="30" name=""/>
+        <alias field="lidar_5x5_mean_egm2008_m" index="31" name=""/>
+        <alias field="lidar_5x5_std_egm2008_m" index="32" name=""/>
+        <alias field="error_5x5_min_lidar_m" index="33" name=""/>
+        <alias field="error_5x5_median_lidar_m" index="34" name=""/>
+        <alias field="error_5x5_mean_lidar_m" index="35" name=""/>
+        <alias field="capture_signal_lidar_m" index="36" name=""/>
+      </aliases>
+      <defaults>
+        <default field="id" applyOnUpdate="0" expression=""/>
+        <default field="region" applyOnUpdate="0" expression=""/>
+        <default field="district" applyOnUpdate="0" expression=""/>
+        <default field="location" applyOnUpdate="0" expression=""/>
+        <default field="obstacle_type" applyOnUpdate="0" expression=""/>
+        <default field="elev_top_amsl_m" applyOnUpdate="0" expression=""/>
+        <default field="elev_base_amsl_m" applyOnUpdate="0" expression=""/>
+        <default field="elev_vertical_crs_epsg" applyOnUpdate="0" expression=""/>
+        <default field="elev_base_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="elev_top_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="geoid_correction_m" applyOnUpdate="0" expression=""/>
+        <default field="height_agl_m" applyOnUpdate="0" expression=""/>
+        <default field="day_marking" applyOnUpdate="0" expression=""/>
+        <default field="lighted" applyOnUpdate="0" expression=""/>
+        <default field="horizontal_accuracy_m" applyOnUpdate="0" expression=""/>
+        <default field="vertical_accuracy_elev_m" applyOnUpdate="0" expression=""/>
+        <default field="vertical_accuracy_agl_m" applyOnUpdate="0" expression=""/>
+        <default field="dem_single_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="error_single_m" applyOnUpdate="0" expression=""/>
+        <default field="dem_5x5_min_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="dem_5x5_median_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="dem_5x5_mean_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="dem_5x5_std_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="error_5x5_min_m" applyOnUpdate="0" expression=""/>
+        <default field="error_5x5_median_m" applyOnUpdate="0" expression=""/>
+        <default field="error_5x5_mean_m" applyOnUpdate="0" expression=""/>
+        <default field="capture_signal_m" applyOnUpdate="0" expression=""/>
+        <default field="lidar_single_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="error_single_lidar_m" applyOnUpdate="0" expression=""/>
+        <default field="lidar_5x5_min_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="lidar_5x5_median_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="lidar_5x5_mean_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="lidar_5x5_std_egm2008_m" applyOnUpdate="0" expression=""/>
+        <default field="error_5x5_min_lidar_m" applyOnUpdate="0" expression=""/>
+        <default field="error_5x5_median_lidar_m" applyOnUpdate="0" expression=""/>
+        <default field="error_5x5_mean_lidar_m" applyOnUpdate="0" expression=""/>
+        <default field="capture_signal_lidar_m" applyOnUpdate="0" expression=""/>
+      </defaults>
+      <constraints>
+        <constraint field="id" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="region" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="district" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="location" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="obstacle_type" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="elev_top_amsl_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="elev_base_amsl_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="elev_vertical_crs_epsg" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="elev_base_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="elev_top_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="geoid_correction_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="height_agl_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="day_marking" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="lighted" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="horizontal_accuracy_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="vertical_accuracy_elev_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="vertical_accuracy_agl_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="dem_single_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_single_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="dem_5x5_min_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="dem_5x5_median_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="dem_5x5_mean_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="dem_5x5_std_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_5x5_min_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_5x5_median_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_5x5_mean_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="capture_signal_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="lidar_single_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_single_lidar_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="lidar_5x5_min_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="lidar_5x5_median_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="lidar_5x5_mean_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="lidar_5x5_std_egm2008_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_5x5_min_lidar_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_5x5_median_lidar_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="error_5x5_mean_lidar_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="capture_signal_lidar_m" exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint field="id" exp="" desc=""/>
+        <constraint field="region" exp="" desc=""/>
+        <constraint field="district" exp="" desc=""/>
+        <constraint field="location" exp="" desc=""/>
+        <constraint field="obstacle_type" exp="" desc=""/>
+        <constraint field="elev_top_amsl_m" exp="" desc=""/>
+        <constraint field="elev_base_amsl_m" exp="" desc=""/>
+        <constraint field="elev_vertical_crs_epsg" exp="" desc=""/>
+        <constraint field="elev_base_egm2008_m" exp="" desc=""/>
+        <constraint field="elev_top_egm2008_m" exp="" desc=""/>
+        <constraint field="geoid_correction_m" exp="" desc=""/>
+        <constraint field="height_agl_m" exp="" desc=""/>
+        <constraint field="day_marking" exp="" desc=""/>
+        <constraint field="lighted" exp="" desc=""/>
+        <constraint field="horizontal_accuracy_m" exp="" desc=""/>
+        <constraint field="vertical_accuracy_elev_m" exp="" desc=""/>
+        <constraint field="vertical_accuracy_agl_m" exp="" desc=""/>
+        <constraint field="dem_single_egm2008_m" exp="" desc=""/>
+        <constraint field="error_single_m" exp="" desc=""/>
+        <constraint field="dem_5x5_min_egm2008_m" exp="" desc=""/>
+        <constraint field="dem_5x5_median_egm2008_m" exp="" desc=""/>
+        <constraint field="dem_5x5_mean_egm2008_m" exp="" desc=""/>
+        <constraint field="dem_5x5_std_egm2008_m" exp="" desc=""/>
+        <constraint field="error_5x5_min_m" exp="" desc=""/>
+        <constraint field="error_5x5_median_m" exp="" desc=""/>
+        <constraint field="error_5x5_mean_m" exp="" desc=""/>
+        <constraint field="capture_signal_m" exp="" desc=""/>
+        <constraint field="lidar_single_egm2008_m" exp="" desc=""/>
+        <constraint field="error_single_lidar_m" exp="" desc=""/>
+        <constraint field="lidar_5x5_min_egm2008_m" exp="" desc=""/>
+        <constraint field="lidar_5x5_median_egm2008_m" exp="" desc=""/>
+        <constraint field="lidar_5x5_mean_egm2008_m" exp="" desc=""/>
+        <constraint field="lidar_5x5_std_egm2008_m" exp="" desc=""/>
+        <constraint field="error_5x5_min_lidar_m" exp="" desc=""/>
+        <constraint field="error_5x5_median_lidar_m" exp="" desc=""/>
+        <constraint field="error_5x5_mean_lidar_m" exp="" desc=""/>
+        <constraint field="capture_signal_lidar_m" exp="" desc=""/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+      </attributeactions>
+      <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+        <columns>
+          <column type="field" hidden="0" name="id" width="-1"/>
+          <column type="field" hidden="0" name="region" width="-1"/>
+          <column type="field" hidden="0" name="district" width="-1"/>
+          <column type="field" hidden="0" name="location" width="-1"/>
+          <column type="field" hidden="0" name="obstacle_type" width="-1"/>
+          <column type="field" hidden="0" name="elev_top_amsl_m" width="-1"/>
+          <column type="field" hidden="0" name="elev_base_amsl_m" width="-1"/>
+          <column type="field" hidden="0" name="elev_vertical_crs_epsg" width="-1"/>
+          <column type="field" hidden="0" name="elev_base_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="elev_top_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="height_agl_m" width="-1"/>
+          <column type="field" hidden="0" name="day_marking" width="-1"/>
+          <column type="field" hidden="0" name="lighted" width="-1"/>
+          <column type="field" hidden="0" name="horizontal_accuracy_m" width="-1"/>
+          <column type="field" hidden="0" name="vertical_accuracy_elev_m" width="-1"/>
+          <column type="field" hidden="0" name="vertical_accuracy_agl_m" width="-1"/>
+          <column type="field" hidden="0" name="dem_single_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="error_single_m" width="-1"/>
+          <column type="field" hidden="0" name="dem_5x5_min_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="dem_5x5_median_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="dem_5x5_mean_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="dem_5x5_std_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="error_5x5_min_m" width="-1"/>
+          <column type="field" hidden="0" name="error_5x5_median_m" width="-1"/>
+          <column type="field" hidden="0" name="error_5x5_mean_m" width="-1"/>
+          <column type="field" hidden="0" name="capture_signal_m" width="-1"/>
+          <column type="field" hidden="0" name="geoid_correction_m" width="-1"/>
+          <column type="field" hidden="0" name="lidar_single_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="error_single_lidar_m" width="-1"/>
+          <column type="field" hidden="0" name="lidar_5x5_min_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="lidar_5x5_median_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="lidar_5x5_mean_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="lidar_5x5_std_egm2008_m" width="-1"/>
+          <column type="field" hidden="0" name="error_5x5_min_lidar_m" width="-1"/>
+          <column type="field" hidden="0" name="error_5x5_median_lidar_m" width="-1"/>
+          <column type="field" hidden="0" name="error_5x5_mean_lidar_m" width="-1"/>
+          <column type="field" hidden="0" name="capture_signal_lidar_m" width="-1"/>
+          <column type="actions" hidden="1" width="-1"/>
+        </columns>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+QGIS forms can have a Python function that is called when the form is
+opened.
+
+Use this function to add extra logic to your forms.
+
+Enter the name of the function in the "Python Init function"
+field.
+An example follows:
+"""
+from qgis.PyQt.QtWidgets import QWidget
+
+def my_form_open(dialog, layer, feature):
+    geom = feature.geometry()
+    control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable>
+        <field name="capture_signal_lidar_m" editable="1"/>
+        <field name="capture_signal_m" editable="1"/>
+        <field name="day_marking" editable="1"/>
+        <field name="dem_5x5_mean_egm2008_m" editable="1"/>
+        <field name="dem_5x5_median_egm2008_m" editable="1"/>
+        <field name="dem_5x5_min_egm2008_m" editable="1"/>
+        <field name="dem_5x5_std_egm2008_m" editable="1"/>
+        <field name="dem_single_egm2008_m" editable="1"/>
+        <field name="district" editable="1"/>
+        <field name="elev_base_amsl_m" editable="1"/>
+        <field name="elev_base_egm2008_m" editable="1"/>
+        <field name="elev_top_amsl_m" editable="1"/>
+        <field name="elev_top_egm2008_m" editable="1"/>
+        <field name="elev_vertical_crs_epsg" editable="1"/>
+        <field name="error_5x5_mean_lidar_m" editable="1"/>
+        <field name="error_5x5_mean_m" editable="1"/>
+        <field name="error_5x5_median_lidar_m" editable="1"/>
+        <field name="error_5x5_median_m" editable="1"/>
+        <field name="error_5x5_min_lidar_m" editable="1"/>
+        <field name="error_5x5_min_m" editable="1"/>
+        <field name="error_single_lidar_m" editable="1"/>
+        <field name="error_single_m" editable="1"/>
+        <field name="geoid_correction_m" editable="1"/>
+        <field name="height_agl_m" editable="1"/>
+        <field name="horizontal_accuracy_m" editable="1"/>
+        <field name="id" editable="1"/>
+        <field name="lidar_5x5_mean_egm2008_m" editable="1"/>
+        <field name="lidar_5x5_median_egm2008_m" editable="1"/>
+        <field name="lidar_5x5_min_egm2008_m" editable="1"/>
+        <field name="lidar_5x5_std_egm2008_m" editable="1"/>
+        <field name="lidar_single_egm2008_m" editable="1"/>
+        <field name="lighted" editable="1"/>
+        <field name="location" editable="1"/>
+        <field name="obstacle_type" editable="1"/>
+        <field name="region" editable="1"/>
+        <field name="vertical_accuracy_agl_m" editable="1"/>
+        <field name="vertical_accuracy_elev_m" editable="1"/>
+      </editable>
+      <labelOnTop>
+        <field labelOnTop="0" name="capture_signal_lidar_m"/>
+        <field labelOnTop="0" name="capture_signal_m"/>
+        <field labelOnTop="0" name="day_marking"/>
+        <field labelOnTop="0" name="dem_5x5_mean_egm2008_m"/>
+        <field labelOnTop="0" name="dem_5x5_median_egm2008_m"/>
+        <field labelOnTop="0" name="dem_5x5_min_egm2008_m"/>
+        <field labelOnTop="0" name="dem_5x5_std_egm2008_m"/>
+        <field labelOnTop="0" name="dem_single_egm2008_m"/>
+        <field labelOnTop="0" name="district"/>
+        <field labelOnTop="0" name="elev_base_amsl_m"/>
+        <field labelOnTop="0" name="elev_base_egm2008_m"/>
+        <field labelOnTop="0" name="elev_top_amsl_m"/>
+        <field labelOnTop="0" name="elev_top_egm2008_m"/>
+        <field labelOnTop="0" name="elev_vertical_crs_epsg"/>
+        <field labelOnTop="0" name="error_5x5_mean_lidar_m"/>
+        <field labelOnTop="0" name="error_5x5_mean_m"/>
+        <field labelOnTop="0" name="error_5x5_median_lidar_m"/>
+        <field labelOnTop="0" name="error_5x5_median_m"/>
+        <field labelOnTop="0" name="error_5x5_min_lidar_m"/>
+        <field labelOnTop="0" name="error_5x5_min_m"/>
+        <field labelOnTop="0" name="error_single_lidar_m"/>
+        <field labelOnTop="0" name="error_single_m"/>
+        <field labelOnTop="0" name="geoid_correction_m"/>
+        <field labelOnTop="0" name="height_agl_m"/>
+        <field labelOnTop="0" name="horizontal_accuracy_m"/>
+        <field labelOnTop="0" name="id"/>
+        <field labelOnTop="0" name="lidar_5x5_mean_egm2008_m"/>
+        <field labelOnTop="0" name="lidar_5x5_median_egm2008_m"/>
+        <field labelOnTop="0" name="lidar_5x5_min_egm2008_m"/>
+        <field labelOnTop="0" name="lidar_5x5_std_egm2008_m"/>
+        <field labelOnTop="0" name="lidar_single_egm2008_m"/>
+        <field labelOnTop="0" name="lighted"/>
+        <field labelOnTop="0" name="location"/>
+        <field labelOnTop="0" name="obstacle_type"/>
+        <field labelOnTop="0" name="region"/>
+        <field labelOnTop="0" name="vertical_accuracy_agl_m"/>
+        <field labelOnTop="0" name="vertical_accuracy_elev_m"/>
+      </labelOnTop>
+      <reuseLastValue>
+        <field reuseLastValue="0" name="capture_signal_lidar_m"/>
+        <field reuseLastValue="0" name="capture_signal_m"/>
+        <field reuseLastValue="0" name="day_marking"/>
+        <field reuseLastValue="0" name="dem_5x5_mean_egm2008_m"/>
+        <field reuseLastValue="0" name="dem_5x5_median_egm2008_m"/>
+        <field reuseLastValue="0" name="dem_5x5_min_egm2008_m"/>
+        <field reuseLastValue="0" name="dem_5x5_std_egm2008_m"/>
+        <field reuseLastValue="0" name="dem_single_egm2008_m"/>
+        <field reuseLastValue="0" name="district"/>
+        <field reuseLastValue="0" name="elev_base_amsl_m"/>
+        <field reuseLastValue="0" name="elev_base_egm2008_m"/>
+        <field reuseLastValue="0" name="elev_top_amsl_m"/>
+        <field reuseLastValue="0" name="elev_top_egm2008_m"/>
+        <field reuseLastValue="0" name="elev_vertical_crs_epsg"/>
+        <field reuseLastValue="0" name="error_5x5_mean_lidar_m"/>
+        <field reuseLastValue="0" name="error_5x5_mean_m"/>
+        <field reuseLastValue="0" name="error_5x5_median_lidar_m"/>
+        <field reuseLastValue="0" name="error_5x5_median_m"/>
+        <field reuseLastValue="0" name="error_5x5_min_lidar_m"/>
+        <field reuseLastValue="0" name="error_5x5_min_m"/>
+        <field reuseLastValue="0" name="error_single_lidar_m"/>
+        <field reuseLastValue="0" name="error_single_m"/>
+        <field reuseLastValue="0" name="geoid_correction_m"/>
+        <field reuseLastValue="0" name="height_agl_m"/>
+        <field reuseLastValue="0" name="horizontal_accuracy_m"/>
+        <field reuseLastValue="0" name="id"/>
+        <field reuseLastValue="0" name="lidar_5x5_mean_egm2008_m"/>
+        <field reuseLastValue="0" name="lidar_5x5_median_egm2008_m"/>
+        <field reuseLastValue="0" name="lidar_5x5_min_egm2008_m"/>
+        <field reuseLastValue="0" name="lidar_5x5_std_egm2008_m"/>
+        <field reuseLastValue="0" name="lidar_single_egm2008_m"/>
+        <field reuseLastValue="0" name="lighted"/>
+        <field reuseLastValue="0" name="location"/>
+        <field reuseLastValue="0" name="obstacle_type"/>
+        <field reuseLastValue="0" name="region"/>
+        <field reuseLastValue="0" name="vertical_accuracy_agl_m"/>
+        <field reuseLastValue="0" name="vertical_accuracy_elev_m"/>
+      </reuseLastValue>
+      <dataDefinedFieldProperties/>
+      <widgets/>
+      <previewExpression>"id"</previewExpression>
+      <mapTip enabled="1"></mapTip>
+    </maplayer>
+    <maplayer simplifyLocal="1" simplifyDrawingTol="1" refreshOnNotifyMessage="" simplifyAlgorithm="0" autoRefreshTime="0" symbologyReferenceScale="-1" autoRefreshMode="Disabled" styleCategories="AllStyleCategories" readOnly="0" type="vector" maxScale="0" simplifyMaxScale="1" legendPlaceholderImage="" wkbType="Point" simplifyDrawingHints="0" minScale="0" labelsEnabled="1" refreshOnNotifyEnabled="0" geometry="Point" hasScaleBasedVisibilityFlag="0">
+      <extent>
+        <xmin>9.56870400000000032</xmin>
+        <ymin>46.41708189999999945</ymin>
+        <xmax>17.02564445999999876</xmax>
+        <ymax>48.95211111999999787</ymax>
+      </extent>
+      <wgs84extent>
+        <xmin>9.56870400000000032</xmin>
+        <ymin>46.41708189999999945</ymin>
+        <xmax>17.02564445999999876</xmax>
+        <ymax>48.95211111999999787</ymax>
+      </wgs84extent>
       <id>obstacles_diff_9cb8f72c</id>
       <datasource>./data/obstacles/austria/obstacles_dem_diff.geojson</datasource>
-      <layername>DEM vs obstacle base - difference (error_single_m)</layername>
+      <layername>CopDEM minus obstacle base </layername>
       <srs>
         <spatialrefsys nativeFormat="Wkt">
           <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],MEMBER["World Geodetic System 1984 (G2296)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
@@ -2866,6 +4027,7 @@ def my_form_open(dialog, layer, feature):
     <layer id="dem_mosaic_d903272d"/>
     <layer id="ESRI_Satellite__ArcGIS_World_Imagery__610f1c8e_5232_4679_ab75_a215dec75d57"/>
     <layer id="dhm_at_lamb_10m_2018_316a46a8_f991_4de9_8310_2cac745ebeb7"/>
+    <layer id="obstacles_dem_diff_d5d7a42d_5cf9_431e_808b_1aeaec158f25"/>
   </layerorder>
   <labelEngineSettings/>
   <properties>
@@ -2917,6 +4079,65 @@ def my_form_open(dialog, layer, feature):
       <DecimalPlaces type="int">2</DecimalPlaces>
     </PositionPrecision>
     <RenderMapTile type="bool">false</RenderMapTile>
+    <ScaleBar>
+      <Color type="QString">0,0,0,255,rgb:0,0,0,1</Color>
+      <Enabled type="bool">true</Enabled>
+      <MarginH type="int">0</MarginH>
+      <MarginUnit type="QString">MM</MarginUnit>
+      <MarginV type="int">0</MarginV>
+      <OutlineColor type="QString">255,255,255,255,rgb:1,1,1,1</OutlineColor>
+      <Placement type="int">1</Placement>
+      <PreferredSize type="int">30</PreferredSize>
+      <Snapping type="bool">true</Snapping>
+      <Style type="int">0</Style>
+      <TextFormat type="QString">&lt;text-style fontLetterSpacing="0" fontUnderline="0" fontSizeUnit="Point" fontItalic="0" fontFamily="MS Shell Dlg 2" forcedBold="0" textOpacity="1" capitalization="0" textOrientation="horizontal" multilineHeight="1" fontSize="10" fontWordSpacing="0" previewBkgrdColor="255,255,255,255,rgb:1,1,1,1" fontKerning="1" fontStrikeout="0" fontWeight="50" forcedItalic="0" blendMode="0" tabStopDistance="6" tabStopDistanceMapUnitScale="3x:0,0,0,0,0,0" fontSizeMapUnitScale="3x:0,0,0,0,0,0" multilineHeightUnit="Percentage" namedStyle="" allowHtml="0" textColor="0,0,0,255,rgb:0,0,0,1" tabStopDistanceUnit="Percentage">
+ &lt;families/>
+ &lt;text-buffer bufferSizeUnits="MM" bufferColor="255,255,255,255,rgb:1,1,1,1" bufferSize="1" bufferJoinStyle="128" bufferDraw="0" bufferBlendMode="0" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferNoFill="1" bufferOpacity="1"/>
+ &lt;text-mask maskType="0" maskSize2="1.5" maskSizeUnits="MM" maskEnabled="0" maskJoinStyle="128" maskSizeMapUnitScale="3x:0,0,0,0,0,0" maskedSymbolLayers="" maskSize="1.5" maskOpacity="1"/>
+ &lt;background shapeBorderWidthMapUnitScale="3x:0,0,0,0,0,0" shapeOffsetUnit="MM" shapeSizeType="0" shapeSizeUnit="MM" shapeDraw="0" shapeBorderWidth="0" shapeRadiiY="0" shapeSizeMapUnitScale="3x:0,0,0,0,0,0" shapeOpacity="1" shapeOffsetX="0" shapeType="0" shapeRadiiUnit="MM" shapeSVGFile="" shapeJoinStyle="64" shapeRadiiX="0" shapeSizeY="0" shapeBorderWidthUnit="MM" shapeOffsetMapUnitScale="3x:0,0,0,0,0,0" shapeFillColor="255,255,255,255,rgb:1,1,1,1" shapeBlendMode="0" shapeSizeX="0" shapeRotation="0" shapeOffsetY="0" shapeRotationType="0" shapeBorderColor="128,128,128,255,rgb:0.5019608,0.5019608,0.5019608,1" shapeRadiiMapUnitScale="3x:0,0,0,0,0,0">
+  &lt;symbol type="fill" frame_rate="10" alpha="1" clip_to_extent="1" is_animated="0" name="fillSymbol" force_rhr="0">
+   &lt;data_defined_properties>
+    &lt;Option type="Map">
+     &lt;Option type="QString" name="name" value=""/>
+     &lt;Option name="properties"/>
+     &lt;Option type="QString" name="type" value="collection"/>
+    &lt;/Option>
+   &lt;/data_defined_properties>
+   &lt;layer pass="0" enabled="1" locked="0" id="" class="SimpleFill">
+    &lt;Option type="Map">
+     &lt;Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+     &lt;Option type="QString" name="color" value="255,255,255,255,rgb:1,1,1,1"/>
+     &lt;Option type="QString" name="joinstyle" value="bevel"/>
+     &lt;Option type="QString" name="offset" value="0,0"/>
+     &lt;Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+     &lt;Option type="QString" name="offset_unit" value="MM"/>
+     &lt;Option type="QString" name="outline_color" value="128,128,128,255,rgb:0.5019608,0.5019608,0.5019608,1"/>
+     &lt;Option type="QString" name="outline_style" value="no"/>
+     &lt;Option type="QString" name="outline_width" value="0"/>
+     &lt;Option type="QString" name="outline_width_unit" value="MM"/>
+     &lt;Option type="QString" name="style" value="solid"/>
+    &lt;/Option>
+    &lt;data_defined_properties>
+     &lt;Option type="Map">
+      &lt;Option type="QString" name="name" value=""/>
+      &lt;Option name="properties"/>
+      &lt;Option type="QString" name="type" value="collection"/>
+     &lt;/Option>
+    &lt;/data_defined_properties>
+   &lt;/layer>
+  &lt;/symbol>
+ &lt;/background>
+ &lt;shadow shadowOffsetDist="1" shadowOffsetUnit="MM" shadowOpacity="0.69999999999999996" shadowRadiusAlphaOnly="0" shadowOffsetMapUnitScale="3x:0,0,0,0,0,0" shadowRadiusMapUnitScale="3x:0,0,0,0,0,0" shadowBlendMode="6" shadowDraw="0" shadowOffsetAngle="135" shadowUnder="0" shadowOffsetGlobal="1" shadowScale="100" shadowColor="0,0,0,255,rgb:0,0,0,1" shadowRadiusUnit="MM" shadowRadius="1.5"/>
+ &lt;dd_properties>
+  &lt;Option type="Map">
+   &lt;Option type="QString" name="name" value=""/>
+   &lt;Option name="properties"/>
+   &lt;Option type="QString" name="type" value="collection"/>
+  &lt;/Option>
+ &lt;/dd_properties>
+&lt;/text-style>
+</TextFormat>
+    </ScaleBar>
     <SpatialRefSys>
       <ProjectionsEnabled type="int">1</ProjectionsEnabled>
     </SpatialRefSys>
@@ -3046,7 +4267,7 @@ def my_form_open(dialog, layer, feature):
   <Sensors/>
   <ProjectViewSettings rotation="0" UseProjectScales="0">
     <Scales/>
-    <DefaultViewExtent ymin="5965622.97735005337744951" ymax="5968118.91565606836229563" xmax="1649681.89025571476668119" xmin="1646166.19461874198168516">
+    <DefaultViewExtent ymin="6034399.4702976094558835" ymax="6034628.50879938807338476" xmax="1375469.05021682498045266" xmin="1374802.96885961177758873">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>PROJCRS["WGS 84 / Pseudo-Mercator",BASEGEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],MEMBER["World Geodetic System 1984 (G2296)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Popular Visualisation Pseudo-Mercator",METHOD["Popular Visualisation Pseudo Mercator",ID["EPSG",1024]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Web mapping and visualisation."],AREA["World between 85.06°S and 85.06°N."],BBOX[-85.06,-180,85.06,180]],ID["EPSG",3857]]</wkt>
         <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs</proj4>
@@ -3111,7 +4332,7 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
-  <ProjectGpsSettings destinationLayerSource="C:/Users/arnis/OneDrive - Drone SIA/euspa/CopDem/data/obstacles/austria/obstacles_dem_diff.geojson" destinationFollowsActiveLayer="1" destinationLayerProvider="ogr" autoCommitFeatures="0" autoAddTrackVertices="0" destinationLayer="obstacles_diff_9cb8f72c" destinationLayerName="DEM vs obstacle base - difference (error_single_m)">
+  <ProjectGpsSettings destinationFollowsActiveLayer="1" autoCommitFeatures="0" autoAddTrackVertices="0" destinationLayer="">
     <timeStampFields/>
   </ProjectGpsSettings>
 </qgis>

@@ -34,12 +34,30 @@ WGS84_3D = 4979              # WGS84 ellipsoidal height
 EGM96 = 5773                 # EGM96 geoid height (generic ICAO/AIXM default —
                               # verify per state before trusting this)
 EGM2008 = 3855                # EGM2008 geoid height (Copernicus DEM's native reference)
+GHA = 5778                    # GHA height ("Gebrauchshoehen Adria" / "Adria Triest") —
+                              # Austria's legacy practical height system, datum Trieste.
+                              # NOT the same as EVRF2000 Austria (EPSG:9274) - see
+                              # SOURCE_VERTICAL_CRS["AT_LIDAR_DHM"] below.
 
-# Per-source vertical datum registry — the per-state audit called for in the
-# workflow's step 2. Add an entry here only after confirming it against the
-# state's own AIP/obstacle-dataset documentation, not by assumption.
+# Per-source vertical datum registry — the per-state (and per-*source*:
+# different products from the same state can use different datums, see
+# below) audit called for in the workflow's step 2. Add an entry here only
+# after confirming it against the source's own documentation, not by
+# assumption.
 SOURCE_VERTICAL_CRS = {
     "AT": 9274,   # Austria obstacle data set: "EVRS", realized as EVRF2000 Austria height
+    # Austria's national 10m LiDAR-derived DHM (dhm_at_lamb_10m_2018.tif).
+    # Corrected from an initial instructed assumption of EVRF2000 Austria
+    # (same key as above) after the user questioned it: BEV's own product
+    # page for this exact product line ("Digitales Gelaendehoehenmodell -
+    # Hoehenraster") states its vertical reference as "Adria Triest"
+    # (EPSG:5778, GHA height) - a DIFFERENT, older system from EVRF2000
+    # Austria, with an official EPSG grid-based transform between them
+    # (EPSG:9275) confirming they're not interchangeable. Verified
+    # numerically: GHA->EGM2008 vs EVRF2000-AT->EGM2008 differ by
+    # -0.47m/+0.12m/-0.24m at three test points - real, not negligible for
+    # this project's error scale. See docs/lidar_comparison.md.
+    "AT_LIDAR_DHM": GHA,
 }
 
 _transformer_cache = {}
@@ -120,3 +138,14 @@ if __name__ == "__main__":
     print(f"For comparison, EVRF2000 Austria vs EGM96 separation: "
           f"{h_egm96_equiv - h_evrf_at:+.3f} m (this is the error avoided by NOT "
           f"assuming the generic ICAO/AIXM EGM96 default)")
+
+    # Austria's LiDAR DHM datum: GHA height (EPSG:5778) - corrected from an
+    # earlier instructed assumption of EVRF2000 Austria after the user
+    # questioned it. Confirm the two really do differ, at several points.
+    print("\nGHA (Austria LiDAR DHM) vs EVRF2000 Austria (obstacle data), both -> EGM2008:")
+    for name, lon_t, lat_t in [("Vienna", 16.37, 48.21), ("Tyrol", 10.9, 46.9), ("near Graz", 15.4, 47.1)]:
+        h = 500.0
+        h_via_gha = to_egm2008(lon_t, lat_t, h, GHA)
+        h_via_evrf = to_egm2008(lon_t, lat_t, h, SOURCE_VERTICAL_CRS["AT"])
+        print(f"  {name}: GHA->EGM2008={h_via_gha:.3f}  EVRF2000-AT->EGM2008={h_via_evrf:.3f}  "
+              f"diff={h_via_gha - h_via_evrf:+.3f} m")
