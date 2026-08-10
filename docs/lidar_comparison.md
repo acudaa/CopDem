@@ -153,11 +153,28 @@ too large for one in-memory array, so it's processed in 2048×2048-pixel
 blocks via windowed reads/writes, with blocks skipped early (before the
 expensive CopDEM reproject) if their LiDAR window is entirely nodata.
 
-**Output**: one file, `data/dem_diff_lidar_10m.tif` — tiled, deflate-
-compressed, with overviews built (`[4, 8, 16, 32, 64]`, average
+**Output**: one file, `data/dem_diff_lidar_10m.tif` (3.38 GB) — tiled,
+deflate-compressed, with overviews built (`[4, 8, 16, 32, 64]`, average
 resampling) for fast QGIS rendering at low zoom. No VRT-mosaic trick
 needed this time (unlike the 30 m version's 32-chunk mosaic) — there's
 exactly one output grid now, not 40 misaligned CopDEM chunks to stitch.
+254 of 464 processing blocks had any LiDAR/CopDEM overlap (the rest are
+outside Austria or outside CopDEM's fetched extent, skipped rather than
+written empty).
+
+**Whole-raster distribution** (see
+[the separate raster analysis report](../reports/copdem_lidar_raster_diff_analysis.html)
+for the full breakdown — subsampled every 15th pixel for tractability,
+~3.8M sample cells):
+
+| | mean | median | stdev | p1 | p99 |
+|---|---|---|---|---|---|
+| CopDEM − LiDAR (m) | +6.18 | +3.90 | 7.89 | −7.55 | +26.31 |
+
+Same order of magnitude as the point-based obstacle comparison
+(`error_single_m` mean +5.25 m), which is a reasonable cross-check even
+though the two aren't measuring exactly the same thing (whole-country
+terrain vs. specifically at obstacle locations).
 
 ## Explicit list of what this does NOT do
 
