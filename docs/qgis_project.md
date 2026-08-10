@@ -22,6 +22,31 @@ too):
   element for the QGIS version in use (older attribute-only style was
   used here).
 
+## Fixed after first real-world open: CRS and layer ordering
+
+Two actual bugs, found by opening the file in real QGIS (not caught by this
+project's own well-formed-XML/path-resolution checks, which is exactly why
+that first caveat above is worth keeping):
+
+- **"Layer CRS is unknown"**: the original `<spatialrefsys>` block only
+  carried `authid`/`description`/acronyms — not enough for QGIS to
+  positively resolve the CRS. Fixed by adding full `wkt` + `proj4` + `srid`
+  definitions for both EPSG:4326 (all the local layers) and EPSG:3857 (the
+  orthophoto's actual datasource CRS — which had also been wrongly forced
+  to EPSG:4326 in its own `<srs>` block, mismatching its `crs=EPSG:3857`
+  datasource parameter). `srsid` (QGIS's internal `srs.db` row number) is
+  deliberately still omitted — guessing it wrong risks resolving to a
+  different CRS entirely, whereas proj4+wkt+authid+srid together are
+  sufficient without it.
+- **Layer stacking order backwards**: the orthophoto (meant as background)
+  was listed *first* in `<layer-tree-group>`, painting it over the DEM and
+  points instead of under them. QGIS's layer-tree XML lists layers
+  top-to-bottom as shown in the Layers panel, and the *top* of that panel
+  draws *last* (foreground) — so the first XML child is the topmost/
+  foreground layer, not the bottom one. Original code's own comment
+  asserted the opposite convention. Fixed order, foreground to background:
+  difference → obstacles → DEM → orthophoto.
+
 **If a layer's data loads but its styling doesn't apply as designed**: that's
 consistent with one of the above being off for your QGIS version — the fix
 is a quick manual re-style (right-click layer → Properties → Symbology),

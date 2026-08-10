@@ -38,13 +38,35 @@ OUTPUT_QGS = ROOT_DIR / "copdem_austria.qgs"
 
 BASEMAP_AT_WMTS_CAPABILITIES = "https://maps.wien.gv.at/basemap/1.0.0/WMTSCapabilities.xml"
 
+# Bug fixed here: the original block only had authid/description/acronyms
+# and no wkt/proj4/srid — QGIS reported "layer CRS is unknown" because that
+# wasn't enough for it to positively resolve the CRS. srsid (QGIS's internal
+# srs.db row number) is deliberately omitted rather than guessed, since a
+# wrong srsid could resolve to the wrong CRS entirely; proj4+wkt+authid+srid
+# together are enough for QGIS to define the CRS correctly without it.
 WGS84_SRS_XML = """<spatialrefsys>
-  <geographicflag>true</geographicflag>
+  <wkt>GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
+  <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+  <srid>4326</srid>
   <authid>EPSG:4326</authid>
   <description>WGS 84</description>
   <projectionacronym>longlat</projectionacronym>
   <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
   <geographicflag>true</geographicflag>
+</spatialrefsys>"""
+
+# The basemap.at WMTS datasource explicitly requests crs=EPSG:3857 — the
+# orthophoto layer's own <srs> needs to match that, not be force-set to
+# WGS84 like every other (EPSG:4326-native) layer here.
+WEBMERCATOR_SRS_XML = """<spatialrefsys>
+  <wkt>PROJCRS["WGS 84 / Pseudo-Mercator",BASEGEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Popular Visualisation Pseudo-Mercator",METHOD["Popular Visualisation Pseudo Mercator",ID["EPSG",1024]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["World between 85.06 S and 85.06 N"],BBOX[-85.06,-180,85.06,180]],ID["EPSG",3857]]</wkt>
+  <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+  <srid>3857</srid>
+  <authid>EPSG:3857</authid>
+  <description>WGS 84 / Pseudo-Mercator</description>
+  <projectionacronym>merc</projectionacronym>
+  <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+  <geographicflag>false</geographicflag>
 </spatialrefsys>"""
 
 
@@ -200,7 +222,7 @@ def _build_orthophoto_layer(layer_id):
     ET.SubElement(maplayer, "layername").text = "Austria VHR Orthophoto (basemap.at, background)"
     ET.SubElement(maplayer, "provider", encoding="UTF-8").text = "wms"
     srs = ET.SubElement(maplayer, "srs")
-    srs.append(ET.fromstring(WGS84_SRS_XML))
+    srs.append(ET.fromstring(WEBMERCATOR_SRS_XML))  # matches datasource's crs=EPSG:3857, not WGS84
     pipe = ET.SubElement(maplayer, "pipe")
     ET.SubElement(pipe, "rasterrenderer", type="singlebandcolordata", band="1", opacity="1", alphaBand="-1")
     return maplayer
@@ -220,21 +242,27 @@ def build_project():
     project_crs.append(ET.fromstring(WGS84_SRS_XML))
 
     layer_tree = ET.SubElement(qgis_root, "layer-tree-group")
-    # Draw order: last child drawn on top. List diff+obstacles above DEM, DEM above orthophoto.
-    ET.SubElement(layer_tree, "layer-tree-layer", providerKey="wms", id=ortho_id,
-                  name="Austria VHR Orthophoto (basemap.at, background)")
-    ET.SubElement(layer_tree, "layer-tree-layer", providerKey="gdal", id=dem_id,
-                  name="Copernicus DEM GLO-30 (Austria mosaic)")
-    ET.SubElement(layer_tree, "layer-tree-layer", providerKey="ogr", id=obstacles_id,
-                  name="Obstacles (simple points)")
+    # Bug fixed here: QGIS's layer-tree XML lists layers top-to-bottom as
+    # they appear in the Layers panel, and the TOP of that panel is drawn
+    # LAST (foreground/highest z-order) - the FIRST XML child is the
+    # topmost/foreground layer, the LAST XML child is the bottom/background
+    # one. The original order had this backwards (orthophoto listed first,
+    # so it painted over everything else). Correct order, first-to-last:
+    # diff (foreground) -> obstacles -> DEM -> orthophoto (background).
     ET.SubElement(layer_tree, "layer-tree-layer", providerKey="ogr", id=diff_id,
                   name="DEM vs obstacle base - difference (error_single_m)")
+    ET.SubElement(layer_tree, "layer-tree-layer", providerKey="ogr", id=obstacles_id,
+                  name="Obstacles (simple points)")
+    ET.SubElement(layer_tree, "layer-tree-layer", providerKey="gdal", id=dem_id,
+                  name="Copernicus DEM GLO-30 (Austria mosaic)")
+    ET.SubElement(layer_tree, "layer-tree-layer", providerKey="wms", id=ortho_id,
+                  name="Austria VHR Orthophoto (basemap.at, background)")
 
     project_layers = ET.SubElement(qgis_root, "projectlayers")
-    project_layers.append(_build_orthophoto_layer(ortho_id))
-    project_layers.append(_build_dem_layer(dem_id))
-    project_layers.append(_build_points_layer(obstacles_id, OBSTACLES_GEOJSON, "Obstacles (simple points)"))
     project_layers.append(_build_diff_layer(diff_id))
+    project_layers.append(_build_points_layer(obstacles_id, OBSTACLES_GEOJSON, "Obstacles (simple points)"))
+    project_layers.append(_build_dem_layer(dem_id))
+    project_layers.append(_build_orthophoto_layer(ortho_id))
 
     tree = ET.ElementTree(qgis_root)
     ET.indent(tree, space="  ")
