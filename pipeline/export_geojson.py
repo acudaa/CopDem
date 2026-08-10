@@ -9,11 +9,11 @@ import csv
 import json
 from pathlib import Path
 
-OBSTACLES_CSV = Path(__file__).parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.csv"
-DIFF_CSV = Path(__file__).parent / "data" / "obstacles" / "austria" / "obstacles_dem_diff.csv"
+OBSTACLES_CSV = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.csv"
+DIFF_CSV = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "obstacles_dem_diff.csv"
 
-OBSTACLES_GEOJSON = Path(__file__).parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.geojson"
-DIFF_GEOJSON = Path(__file__).parent / "data" / "obstacles" / "austria" / "obstacles_dem_diff.geojson"
+OBSTACLES_GEOJSON = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.geojson"
+DIFF_GEOJSON = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "obstacles_dem_diff.geojson"
 
 BOOL_FIELDS = {"day_marking", "lighted"}
 FLOAT_SUFFIXES = ("_m", "_epsg")  # numeric-looking fields; empty string -> null

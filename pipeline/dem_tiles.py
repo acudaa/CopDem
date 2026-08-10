@@ -24,7 +24,7 @@ from cdse_auth import get_access_token
 
 PROCESS_URL = "https://sh.dataspace.copernicus.eu/api/v1/process"
 
-CACHE_DIR = Path(__file__).parent / "data" / "dem_tiles"
+CACHE_DIR = Path(__file__).parent.parent / "data" / "dem_tiles"
 
 # Approximate bounding box for Austria (min_lon, min_lat, max_lon, max_lat)
 AUSTRIA_BBOX = (9.5, 46.35, 17.2, 49.05)

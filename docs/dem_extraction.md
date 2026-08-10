@@ -1,6 +1,6 @@
 # DEM extraction and comparison — design decisions and omissions
 
-Scope: [`extract_dem.py`](../extract_dem.py). Takes the clean obstacle table
+Scope: [`extract_dem.py`](../pipeline/extract_dem.py). Takes the clean obstacle table
 from `obstacles_austria.py` and samples the cached Copernicus DEM tiles at
 each point, per the single-cell + 5×5-window design agreed earlier.
 

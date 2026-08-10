@@ -30,7 +30,7 @@ from uuid import uuid4
 import xml.etree.ElementTree
 import rasterio
 
-ROOT_DIR = Path(__file__).parent
+ROOT_DIR = Path(__file__).parent.parent
 DEM_VRT = ROOT_DIR / "data" / "dem_mosaic.vrt"
 OBSTACLES_GEOJSON = ROOT_DIR / "data" / "obstacles" / "austria" / "obstacles_simple_points.geojson"
 DIFF_GEOJSON = ROOT_DIR / "data" / "obstacles" / "austria" / "obstacles_dem_diff.geojson"

@@ -1,6 +1,6 @@
 # Obstacle ingestion — design decisions and omissions
 
-Scope: this documents [`obstacles_austria.py`](../obstacles_austria.py), v1.
+Scope: this documents [`obstacles_austria.py`](../pipeline/obstacles_austria.py), v1.
 It covers **only Austria**, and **only the simplest obstacle records**. The
 intent is a small, well-understood, high-confidence slice to validate the
 DEM comparison pipeline against, before taking on the harder cases. Every
@@ -71,7 +71,7 @@ coordinates — both fields were 100% well-formed across all 1939 Point rows
 | `height_agl_m` | `Maximale Höhe AGL (M / FT)` | Same metres-only parsing. Used to derive base elevation (below), and kept standalone for the single-cell-vs-5×5 "capture signal" diagnostic. |
 | `elev_base_amsl_m` | (computed) | `elev_top_amsl_m - height_agl_m`. **This is the obstacle base elevation** — what the DEM comparison actually targets. |
 | `elev_vertical_crs_epsg` | (derived, constant `9274`) | See "Vertical datum" below — every Austria record gets the same source vertical CRS. |
-| `elev_base_egm2008_m` | (computed) | `elev_base_amsl_m` converted to EGM2008 via `vertical_datum.to_egm2008()`, per-point (position-dependent — see [vertical_datum.py](../vertical_datum.py)). **This is the field `extract_dem.py` compares the DEM against.** |
+| `elev_base_egm2008_m` | (computed) | `elev_base_amsl_m` converted to EGM2008 via `vertical_datum.to_egm2008()`, per-point (position-dependent — see [vertical_datum.py](../pipeline/vertical_datum.py)). **This is the field `extract_dem.py` compares the DEM against.** |
 | `elev_top_egm2008_m` | (computed) | Same conversion applied to the top elevation — kept for QC/reference, not used in the primary comparison. |
 | `horizontal_accuracy_m`, `vertical_accuracy_elev_m`, `vertical_accuracy_agl_m` | `Horizontale Genauigkeit`, `Vertikale Genauigkeit ...` | Parsed to a float in metres where stated; **`None` (not `0`) where the source says `---`**. A missing accuracy claim must never be silently treated as a perfect (zero-error) claim — that would bias any accuracy-weighted analysis. Only ~8% of Point records have a stated accuracy at all. |
 | `day_marking`, `lighted` | `Tageskenn-zeichnung`, `Befeuert` | Parsed `ja/yes` → `True`, `nein/no` → `False`. Not used in the DEM comparison itself; kept for possible future stratification (marked/lit obstacles may correlate with height/prominence). |
@@ -124,7 +124,7 @@ before trusting results.
 
 This is the most consequential decision in the ingestion step, so it's
 documented here in addition to the reasoning already in
-[vertical_datum.py](../vertical_datum.py):
+[vertical_datum.py](../pipeline/vertical_datum.py):
 
 - The source file's own metadata states its vertical reference as `EVRS`
   (European Vertical Reference System) — **not** EGM96, which is the

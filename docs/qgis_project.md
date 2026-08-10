@@ -1,7 +1,7 @@
 # QGIS project — design decisions, sources, and a real caveat
 
 Scope: [`copdem_austria.qgs`](../copdem_austria.qgs), originally generated
-by [`build_qgis_project.py`](../build_qgis_project.py).
+by [`build_qgis_project.py`](../pipeline/build_qgis_project.py).
 
 ## Ownership shift: the live `.qgs` is now authoritative, not the generator
 

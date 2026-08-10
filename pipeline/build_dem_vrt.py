@@ -15,8 +15,8 @@ from pathlib import Path
 import _rasterio_compat  # noqa: F401
 import rasterio
 
-DEM_DIR = Path(__file__).parent / "data" / "dem_tiles"
-OUTPUT_VRT = Path(__file__).parent / "data" / "dem_mosaic.vrt"
+DEM_DIR = Path(__file__).parent.parent / "data" / "dem_tiles"
+OUTPUT_VRT = Path(__file__).parent.parent / "data" / "dem_mosaic.vrt"
 
 
 def build_vrt(dem_dir=DEM_DIR, output_vrt=OUTPUT_VRT):

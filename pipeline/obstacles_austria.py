@@ -19,8 +19,8 @@ import openpyxl
 
 from vertical_datum import SOURCE_VERTICAL_CRS, to_egm2008
 
-SOURCE_DIR = Path(__file__).parent / "data" / "obstacles" / "austria" / "extracted"
-OUTPUT_PATH = Path(__file__).parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.csv"
+SOURCE_DIR = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "extracted"
+OUTPUT_PATH = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.csv"
 
 SHEET_NAME = "Alle - All"
 HEADER_ROWS = 3  # footnote row + DE header row + EN header row

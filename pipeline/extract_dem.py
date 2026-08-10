@@ -17,9 +17,9 @@ import numpy as np
 import rasterio
 from rasterio.windows import Window
 
-DEM_DIR = Path(__file__).parent / "data" / "dem_tiles"
-OBSTACLES_CSV = Path(__file__).parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.csv"
-OUTPUT_CSV = Path(__file__).parent / "data" / "obstacles" / "austria" / "obstacles_dem_diff.csv"
+DEM_DIR = Path(__file__).parent.parent / "data" / "dem_tiles"
+OBSTACLES_CSV = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "obstacles_simple_points.csv"
+OUTPUT_CSV = Path(__file__).parent.parent / "data" / "obstacles" / "austria" / "obstacles_dem_diff.csv"
 
 _CHUNK_NAME_RE = re.compile(r"dem_([\d.]+)_([\d.]+)_([\d.]+)_([\d.]+)\.tif$")
 
