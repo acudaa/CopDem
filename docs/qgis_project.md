@@ -86,6 +86,9 @@ wants, and it can then be regenerated correctly for good.
 | Copernicus DEM GLO-30 (mosaic) | `data/dem_mosaic.vrt` (40 cached chunks) | Singleband pseudocolor, 5-stop interpolated ramp, blue→green→yellow→orange→red across the DEM's actual min/max (~103–3922 m) |
 | Obstacles (simple points) | `obstacles_simple_points.geojson` (1932 points) | Grey circle markers. Point labels (see below). |
 | DEM vs obstacle base — difference | `obstacles_dem_diff.geojson` | Graduated, 6 classes on `error_single_m`, diverging blue (DEM reads below the obstacle base) → red (DEM reads above it), centered on zero. Point labels (see below). |
+| CopDEM − Austria LiDAR difference (mosaic) | `data/dem_diff_lidar_mosaic.vrt` (32 chunks — 8 of the original 40 CopDEM chunks have no Austria/LiDAR overlap and are absent, not blank) | Singleband pseudocolor, 5-stop **interpolated diverging** ramp (`#2166ac`→`#f7f7f7`→`#b2182b`), classification range **−30 to +30 m**, same blue-low/red-high convention as the point difference layer and the analytical report. See [lidar_comparison.md](lidar_comparison.md) for how this raster was built. |
+
+Also present, added directly by the user rather than the generator (default styling, not covered here): **dhm_at_lamb_10m_2018** (the raw Austria LiDAR source file) and the **ESRI Satellite** background (which replaced basemap.at — see below).
 
 ## Point labels
 

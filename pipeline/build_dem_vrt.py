@@ -19,10 +19,14 @@ DEM_DIR = Path(__file__).parent.parent / "data" / "dem_tiles"
 OUTPUT_VRT = Path(__file__).parent.parent / "data" / "dem_mosaic.vrt"
 
 
-def build_vrt(dem_dir=DEM_DIR, output_vrt=OUTPUT_VRT):
-    tiles = sorted(dem_dir.glob("dem_*.tif"))
+def build_vrt(dem_dir=DEM_DIR, output_vrt=OUTPUT_VRT, glob_pattern="dem_*.tif", source_subdir=None):
+    """Generic chunk-mosaic VRT builder, reused by build_lidar_diff_raster.py
+    for the CopDEM-vs-LiDAR difference chunks too (same display-only caveat
+    applies - see this module's docstring)."""
+    tiles = sorted(dem_dir.glob(glob_pattern))
     if not tiles:
-        raise FileNotFoundError(f"No DEM tiles found in {dem_dir}")
+        raise FileNotFoundError(f"No tiles matching {glob_pattern!r} found in {dem_dir}")
+    source_subdir = source_subdir if source_subdir is not None else dem_dir.name
 
     metas = []
     for path in tiles:
@@ -69,7 +73,7 @@ def build_vrt(dem_dir=DEM_DIR, output_vrt=OUTPUT_VRT):
         dst_h = round((b.top - b.bottom) / px_h)
 
         source = ET.SubElement(band, "SimpleSource")
-        ET.SubElement(source, "SourceFilename", relativeToVRT="1").text = f"dem_tiles/{m['path'].name}"
+        ET.SubElement(source, "SourceFilename", relativeToVRT="1").text = f"{source_subdir}/{m['path'].name}"
         ET.SubElement(source, "SourceBand").text = "1"
         ET.SubElement(source, "SrcRect", xOff="0", yOff="0",
                       xSize=str(m["width"]), ySize=str(m["height"]))

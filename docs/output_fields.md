@@ -61,6 +61,7 @@ the reference (assumed-true) value being evaluated against.
 | `elev_vertical_crs_epsg` | EPSG code of the vertical CRS the two fields above are expressed in — always `9274` (EVRF2000 Austria height) for this source. Recorded per-row so the provenance travels with the data. |
 | `elev_base_egm2008_m` | `elev_base_amsl_m` converted to EGM2008 (Copernicus DEM's native vertical reference). **This is the actual value used as "obstacle base elevation" in every `error_*` field below.** |
 | `elev_top_egm2008_m` | Same conversion applied to the top elevation. Reference/QC only. |
+| `geoid_correction_m` | `elev_base_egm2008_m − elev_base_amsl_m` — the net adjustment the EVRF2000 Austria → EGM2008 conversion applied at this point. Position-dependent (see vertical_datum.py), not a constant offset — this makes the size of the datum correction itself visible per-point rather than only implicit in the converted value. Named `geoid_correction_m` rather than the bare `geoid_correction` to match this file's `_m` unit-suffix convention (and so it round-trips as a float through `export_geojson.py`'s coercion, which keys off that suffix). |
 | `day_marking`, `lighted` | Whether the obstacle carries daytime marking / is lit (`True`/`False`), from the source. Not used in the comparison. |
 | `horizontal_accuracy_m`, `vertical_accuracy_elev_m`, `vertical_accuracy_agl_m` | Stated positional/height accuracy from the source, in metres, where available — `null`/empty where the source doesn't state one (only ~8% of records have these). A blank here means "unknown," never "zero error." |
 
@@ -75,6 +76,22 @@ the reference (assumed-true) value being evaluated against.
 | `error_5x5_min_m`, `error_5x5_median_m`, `error_5x5_mean_m` | Each window statistic above, minus `elev_base_egm2008_m` — same subtraction order and sign convention as `error_single_m`, just using the window value instead of the single pixel. |
 | `capture_signal_m` | `dem_single_egm2008_m − dem_5x5_median_egm2008_m` — **not** compared against the obstacle at all, this compares the DEM to itself. Positive means the single pixel at the obstacle's location reads higher than its own surroundings, consistent with the DSM partially capturing the obstacle's own height rather than showing bare ground there. This is a diagnostic for *why* `error_single_m` might be more positive than `error_5x5_*_m`, not an accuracy metric in its own right. |
 | Window fields left blank | When the 5×5 window would extend past the edge of the obstacle's DEM chunk (4 of 1932 obstacles), every `dem_5x5_*`, `error_5x5_*`, and `capture_signal_m` field is left empty — `error_single_m` is still computed. See dem_extraction.md's "Known omission" section. |
+
+## LiDAR comparison fields — added by `extract_lidar.py`
+
+Same naming pattern and sign convention as the CopDEM fields above, just
+against Austria's LiDAR-derived DHM instead — see
+[lidar_comparison.md](lidar_comparison.md) for the full design rationale,
+including the instructed (not independently verified) vertical-datum
+assumption and the "same way, different window footprint" caveat.
+
+| Field | Meaning |
+|---|---|
+| `lidar_single_egm2008_m` | The LiDAR DEM's elevation at the obstacle's exact (lon, lat), bilinear-interpolated, on EGM2008. |
+| `error_single_lidar_m` | `lidar_single_egm2008_m − elev_base_egm2008_m`. Same sign convention as `error_single_m`. |
+| `lidar_5x5_min_egm2008_m`, `lidar_5x5_median_egm2008_m`, `lidar_5x5_mean_egm2008_m`, `lidar_5x5_std_egm2008_m` | Same as the CopDEM `dem_5x5_*` fields, but the window is 5×5 cells of LiDAR's **10 m** native grid (50 m × 50 m), not CopDEM's ~30 m grid (150 m × 150 m) — same algorithm, different physical footprint. |
+| `error_5x5_min_lidar_m`, `error_5x5_median_lidar_m`, `error_5x5_mean_lidar_m` | Each LiDAR window statistic minus `elev_base_egm2008_m`. |
+| `capture_signal_lidar_m` | `lidar_single_egm2008_m − lidar_5x5_median_egm2008_m` — the LiDAR-side equivalent of `capture_signal_m`, same self-comparison diagnostic. |
 
 ## Worked example
 

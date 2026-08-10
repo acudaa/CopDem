@@ -158,6 +158,14 @@ def load_simple_point_obstacles(xlsx_path=None):
         )
         elev_base_egm2008_m = to_egm2008(lon, lat, elev_base_amsl_m, COUNTRY_VERTICAL_EPSG)
         elev_top_egm2008_m = to_egm2008(lon, lat, elev_top_amsl_m, COUNTRY_VERTICAL_EPSG)
+        # The net adjustment applied by the EVRF2000 Austria -> EGM2008
+        # conversion at this point (position-dependent, not a constant -
+        # see vertical_datum.py). Positive means EGM2008 sits above the
+        # source datum here; this is what "elev_base_amsl_m" was shifted by
+        # to get "elev_base_egm2008_m", recorded explicitly so the size of
+        # the datum correction itself is visible per-point, not just baked
+        # silently into the converted value.
+        geoid_correction_m = elev_base_egm2008_m - elev_base_amsl_m
 
         obstacles.append({
             "id": obstacle_id,
@@ -172,6 +180,7 @@ def load_simple_point_obstacles(xlsx_path=None):
             "elev_vertical_crs_epsg": COUNTRY_VERTICAL_EPSG,
             "elev_base_egm2008_m": elev_base_egm2008_m,
             "elev_top_egm2008_m": elev_top_egm2008_m,
+            "geoid_correction_m": geoid_correction_m,
             "height_agl_m": height_agl_m,
             "day_marking": _parse_yes_no(row[COL_DAY_MARKING]),
             "lighted": _parse_yes_no(row[COL_LIGHTED]),
