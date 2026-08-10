@@ -50,7 +50,7 @@
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="./data/dem_diff_lidar_mosaic.vrt" legend_exp="" expanded="1" id="lidar_diff_mosaic_a4f002d0" patch_size="0,0" providerKey="gdal" checked="Qt::Checked" legend_split_behavior="0" name="CopDEM - Austria LiDAR difference (m)">
+    <layer-tree-layer source="./data/dem_diff_lidar_10m.tif" legend_exp="" expanded="1" id="lidar_diff_mosaic_a4f002d0" patch_size="0,0" providerKey="gdal" checked="Qt::Checked" legend_split_behavior="0" name="CopDEM - Austria LiDAR difference, 10m grid (m)">
       <customproperties>
         <Option/>
       </customproperties>
@@ -129,7 +129,7 @@
         <legendlayerfile layerid="obstacles_points_9a5ca33b" isInOverview="0" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="CopDEM - Austria LiDAR difference (m)">
+    <legendlayer drawingOrder="-1" showFeatureCount="0" open="true" checked="Qt::Checked" name="CopDEM - Austria LiDAR difference, 10m grid (m)">
       <filegroup open="true" hidden="false">
         <legendlayerfile layerid="lidar_diff_mosaic_a4f002d0" isInOverview="0" visible="1"/>
       </filegroup>
@@ -892,31 +892,31 @@
     </maplayer>
     <maplayer autoRefreshMode="Disabled" maxScale="0" legendPlaceholderImage="" minScale="0" type="raster" autoRefreshTime="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0">
       <extent>
-        <xmin>9.5</xmin>
-        <ymin>46.35000000000000142</ymin>
-        <xmax>17.19999999999998863</xmax>
-        <ymax>49.04999999999999716</ymax>
+        <xmin>108875.0</xmin>
+        <ymin>268625.0</ymin>
+        <xmax>689485.0</xmax>
+        <ymax>586555.0</ymax>
       </extent>
       <wgs84extent>
-        <xmin>9.5</xmin>
-        <ymin>46.35000000000000142</ymin>
-        <xmax>17.19999999999998863</xmax>
-        <ymax>49.04999999999999716</ymax>
+        <xmin>9.3435013159319488</xmin>
+        <ymin>46.253613745262663</ymin>
+        <xmax>17.299040156645695</xmax>
+        <ymax>49.177508084726374</ymax>
       </wgs84extent>
       <id>lidar_diff_mosaic_a4f002d0</id>
-      <datasource>./data/dem_diff_lidar_mosaic.vrt</datasource>
-      <layername>CopDEM - Austria LiDAR difference (m)</layername>
+      <datasource>./data/dem_diff_lidar_10m.tif</datasource>
+      <layername>CopDEM - Austria LiDAR difference, 10m grid (m)</layername>
       <srs>
         <spatialrefsys nativeFormat="Wkt">
-          <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],MEMBER["World Geodetic System 1984 (G2296)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
-          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-          <srsid>3452</srsid>
-          <srid>4326</srid>
-          <authid>EPSG:4326</authid>
-          <description>WGS 84</description>
-          <projectionacronym>longlat</projectionacronym>
-          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <wkt>PROJCRS["MGI / Austria Lambert",BASEGEOGCRS["MGI",DATUM["Militar-Geographische Institut",ELLIPSOID["Bessel 1841",6377397.155,299.1528128,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4312]],CONVERSION["Austria Lambert",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",47.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",13.3333333333333,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",46,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",400000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",400000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Topographic mapping (medium and small scale)."],AREA["Austria."],BBOX[46.4,9.53,49.02,17.17]],ID["EPSG",31287]]</wkt>
+          <proj4>+proj=lcc +lat_0=47.5 +lon_0=13.3333333333333 +lat_1=49 +lat_2=46 +x_0=400000 +y_0=400000 +ellps=bessel +towgs84=577.326,90.129,463.919,5.137,1.474,5.297,2.4232 +units=m +no_defs</proj4>
+          <srsid>2628</srsid>
+          <srid>31287</srid>
+          <authid>EPSG:31287</authid>
+          <description>MGI / Austria Lambert</description>
+          <projectionacronym>lcc</projectionacronym>
+          <ellipsoidacronym>EPSG:7004</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
