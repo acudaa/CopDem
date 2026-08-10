@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<qgis projectname="CopDem - Austria DEM Validation" version="3.34.0">
+  <title>CopDem - Austria DEM Validation</title>
+  <homePath path="" />
+  <projectCrs>
+    <spatialrefsys>
+      <geographicflag>true</geographicflag>
+      <authid>EPSG:4326</authid>
+      <description>WGS 84</description>
+      <projectionacronym>longlat</projectionacronym>
+      <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+      <geographicflag>true</geographicflag>
+    </spatialrefsys>
+  </projectCrs>
+  <layer-tree-group>
+    <layer-tree-layer providerKey="wms" id="basemap_at_ortho_a33f57f5" name="Austria VHR Orthophoto (basemap.at, background)" />
+    <layer-tree-layer providerKey="gdal" id="dem_mosaic_aee36523" name="Copernicus DEM GLO-30 (Austria mosaic)" />
+    <layer-tree-layer providerKey="ogr" id="obstacles_points_0eb1c943" name="Obstacles (simple points)" />
+    <layer-tree-layer providerKey="ogr" id="obstacles_diff_eeb4b97d" name="DEM vs obstacle base - difference (error_single_m)" />
+  </layer-tree-group>
+  <projectlayers>
+    <maplayer type="raster" hasScaleBasedVisibilityFlag="0">
+      <id>basemap_at_ortho_a33f57f5</id>
+      <datasource>contextualWMSLegend=0&amp;crs=EPSG:3857&amp;dpiMode=7&amp;format=image/jpeg&amp;layers=bmaporthofoto30cm&amp;styles=normal&amp;tileMatrixSet=google3857_0-17&amp;url=https://maps.wien.gv.at/basemap/1.0.0/WMTSCapabilities.xml</datasource>
+      <layername>Austria VHR Orthophoto (basemap.at, background)</layername>
+      <provider encoding="UTF-8">wms</provider>
+      <srs>
+        <spatialrefsys>
+          <geographicflag>true</geographicflag>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <pipe>
+        <rasterrenderer type="singlebandcolordata" band="1" opacity="1" alphaBand="-1" />
+      </pipe>
+    </maplayer>
+    <maplayer type="raster" hasScaleBasedVisibilityFlag="0">
+      <id>dem_mosaic_aee36523</id>
+      <datasource>./data/dem_mosaic.vrt</datasource>
+      <layername>Copernicus DEM GLO-30 (Austria mosaic)</layername>
+      <provider encoding="UTF-8">gdal</provider>
+      <srs>
+        <spatialrefsys>
+          <geographicflag>true</geographicflag>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <pipe>
+        <rasterrenderer type="singlebandpseudocolor" band="1" opacity="1" alphaBand="-1" classificationMin="102.51467895507812" classificationMax="3922.041748046875">
+          <rastershader>
+            <colorrampshader colorRampType="INTERPOLATED" clip="0">
+              <item value="102.51" label="103 m" color="#3288bd" alpha="255" />
+              <item value="1057.40" label="1057 m" color="#abdda4" alpha="255" />
+              <item value="2012.28" label="2012 m" color="#ffffbf" alpha="255" />
+              <item value="2967.16" label="2967 m" color="#fdae61" alpha="255" />
+              <item value="3922.04" label="3922 m" color="#d53e4f" alpha="255" />
+            </colorrampshader>
+          </rastershader>
+        </rasterrenderer>
+        <brightnesscontrast brightness="0" contrast="0" />
+        <huesaturation saturation="0" grayscaleMode="0" />
+        <rasterresampler />
+      </pipe>
+    </maplayer>
+    <maplayer type="vector" hasScaleBasedVisibilityFlag="0" geometry="Point">
+      <id>obstacles_points_0eb1c943</id>
+      <datasource>./data/obstacles/austria/obstacles_simple_points.geojson</datasource>
+      <layername>Obstacles (simple points)</layername>
+      <provider encoding="UTF-8">ogr</provider>
+      <srs>
+        <spatialrefsys>
+          <geographicflag>true</geographicflag>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <renderer-v3 type="singleSymbol" symbollevels="0" enableorderby="0" forceraster="0">
+        <symbols>
+          <symbol type="marker" name="0" alpha="1" clip_to_extent="1" force_rhr="0">
+            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+              <Option type="Map">
+                <Option type="QString" name="name" value="circle" />
+                <Option type="QString" name="color" value="#606060" />
+                <Option type="QString" name="outline_color" value="#404040" />
+                <Option type="QString" name="outline_style" value="solid" />
+                <Option type="QString" name="outline_width" value="0.2" />
+                <Option type="QString" name="size" value="2.2" />
+                <Option type="QString" name="size_unit" value="MM" />
+                <Option type="QString" name="outline_width_unit" value="MM" />
+                <Option type="QString" name="horizontal_anchor_point" value="1" />
+                <Option type="QString" name="vertical_anchor_point" value="1" />
+              </Option>
+            </layer>
+          </symbol>
+        </symbols>
+      </renderer-v3>
+    </maplayer>
+    <maplayer type="vector" hasScaleBasedVisibilityFlag="0" geometry="Point">
+      <id>obstacles_diff_eeb4b97d</id>
+      <datasource>./data/obstacles/austria/obstacles_dem_diff.geojson</datasource>
+      <layername>DEM vs obstacle base - difference (error_single_m)</layername>
+      <provider encoding="UTF-8">ogr</provider>
+      <srs>
+        <spatialrefsys>
+          <geographicflag>true</geographicflag>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <renderer-v3 type="graduatedSymbol" attr="error_single_m" graduatedMethod="GraduatedColor" symbollevels="0" enableorderby="0" forceraster="0">
+        <ranges>
+          <range lower="-1000000.0" upper="-15" symbol="0" label="&lt; -15 m (DEM well below base)" render="true" uuid="{23b64798-bcaa-4897-a165-836a75182965}" />
+          <range lower="-15" upper="-5" symbol="1" label="-15 to -5 m" render="true" uuid="{9bfbe670-3790-4845-aeee-85a90ad3dde8}" />
+          <range lower="-5" upper="0" symbol="2" label="-5 to 0 m" render="true" uuid="{c13f541f-cf9b-4f39-a063-818990e722b2}" />
+          <range lower="0" upper="5" symbol="3" label="0 to 5 m" render="true" uuid="{ed3cfce0-81cd-414a-a258-7ac3828016cd}" />
+          <range lower="5" upper="15" symbol="4" label="5 to 15 m" render="true" uuid="{af10900a-7371-4b57-a6aa-225f00324268}" />
+          <range lower="15" upper="1000000.0" symbol="5" label="&gt; 15 m (DEM well above base)" render="true" uuid="{23f6145b-aa29-48ee-bad1-bf5c9db28a5f}" />
+        </ranges>
+        <symbols>
+          <symbol type="marker" name="0" alpha="1" clip_to_extent="1" force_rhr="0">
+            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+              <Option type="Map">
+                <Option type="QString" name="name" value="circle" />
+                <Option type="QString" name="color" value="#2166ac" />
+                <Option type="QString" name="outline_color" value="#404040" />
+                <Option type="QString" name="outline_style" value="solid" />
+                <Option type="QString" name="outline_width" value="0.2" />
+                <Option type="QString" name="size" value="2.8" />
+                <Option type="QString" name="size_unit" value="MM" />
+                <Option type="QString" name="outline_width_unit" value="MM" />
+                <Option type="QString" name="horizontal_anchor_point" value="1" />
+                <Option type="QString" name="vertical_anchor_point" value="1" />
+              </Option>
+            </layer>
+          </symbol>
+          <symbol type="marker" name="1" alpha="1" clip_to_extent="1" force_rhr="0">
+            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+              <Option type="Map">
+                <Option type="QString" name="name" value="circle" />
+                <Option type="QString" name="color" value="#67a9cf" />
+                <Option type="QString" name="outline_color" value="#404040" />
+                <Option type="QString" name="outline_style" value="solid" />
+                <Option type="QString" name="outline_width" value="0.2" />
+                <Option type="QString" name="size" value="2.8" />
+                <Option type="QString" name="size_unit" value="MM" />
+                <Option type="QString" name="outline_width_unit" value="MM" />
+                <Option type="QString" name="horizontal_anchor_point" value="1" />
+                <Option type="QString" name="vertical_anchor_point" value="1" />
+              </Option>
+            </layer>
+          </symbol>
+          <symbol type="marker" name="2" alpha="1" clip_to_extent="1" force_rhr="0">
+            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+              <Option type="Map">
+                <Option type="QString" name="name" value="circle" />
+                <Option type="QString" name="color" value="#d1e5f0" />
+                <Option type="QString" name="outline_color" value="#404040" />
+                <Option type="QString" name="outline_style" value="solid" />
+                <Option type="QString" name="outline_width" value="0.2" />
+                <Option type="QString" name="size" value="2.8" />
+                <Option type="QString" name="size_unit" value="MM" />
+                <Option type="QString" name="outline_width_unit" value="MM" />
+                <Option type="QString" name="horizontal_anchor_point" value="1" />
+                <Option type="QString" name="vertical_anchor_point" value="1" />
+              </Option>
+            </layer>
+          </symbol>
+          <symbol type="marker" name="3" alpha="1" clip_to_extent="1" force_rhr="0">
+            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+              <Option type="Map">
+                <Option type="QString" name="name" value="circle" />
+                <Option type="QString" name="color" value="#fddbc7" />
+                <Option type="QString" name="outline_color" value="#404040" />
+                <Option type="QString" name="outline_style" value="solid" />
+                <Option type="QString" name="outline_width" value="0.2" />
+                <Option type="QString" name="size" value="2.8" />
+                <Option type="QString" name="size_unit" value="MM" />
+                <Option type="QString" name="outline_width_unit" value="MM" />
+                <Option type="QString" name="horizontal_anchor_point" value="1" />
+                <Option type="QString" name="vertical_anchor_point" value="1" />
+              </Option>
+            </layer>
+          </symbol>
+          <symbol type="marker" name="4" alpha="1" clip_to_extent="1" force_rhr="0">
+            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+              <Option type="Map">
+                <Option type="QString" name="name" value="circle" />
+                <Option type="QString" name="color" value="#ef8a62" />
+                <Option type="QString" name="outline_color" value="#404040" />
+                <Option type="QString" name="outline_style" value="solid" />
+                <Option type="QString" name="outline_width" value="0.2" />
+                <Option type="QString" name="size" value="2.8" />
+                <Option type="QString" name="size_unit" value="MM" />
+                <Option type="QString" name="outline_width_unit" value="MM" />
+                <Option type="QString" name="horizontal_anchor_point" value="1" />
+                <Option type="QString" name="vertical_anchor_point" value="1" />
+              </Option>
+            </layer>
+          </symbol>
+          <symbol type="marker" name="5" alpha="1" clip_to_extent="1" force_rhr="0">
+            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+              <Option type="Map">
+                <Option type="QString" name="name" value="circle" />
+                <Option type="QString" name="color" value="#b2182b" />
+                <Option type="QString" name="outline_color" value="#404040" />
+                <Option type="QString" name="outline_style" value="solid" />
+                <Option type="QString" name="outline_width" value="0.2" />
+                <Option type="QString" name="size" value="2.8" />
+                <Option type="QString" name="size_unit" value="MM" />
+                <Option type="QString" name="outline_width_unit" value="MM" />
+                <Option type="QString" name="horizontal_anchor_point" value="1" />
+                <Option type="QString" name="vertical_anchor_point" value="1" />
+              </Option>
+            </layer>
+          </symbol>
+        </symbols>
+      </renderer-v3>
+    </maplayer>
+  </projectlayers>
+</qgis>
