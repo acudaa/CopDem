@@ -21,10 +21,11 @@ too):
 - Whether the `graduatedSymbol` renderer needs a `<classificationMethod>`
   element for the QGIS version in use (older attribute-only style was
   used here).
-- The difference-layer's `<labeling type="simple">` PAL settings XML
-  (text-style/shadow/placement structure) — same situation as the CRS bug
-  below: authored from documented/observed schema, not confirmed against a
-  live install. If labels don't appear or the shadow doesn't render, the
+- Both point layers' `<labeling type="simple">` PAL settings XML
+  (text-style/text-buffer/shadow/placement structure, shared by both via
+  `_build_label_settings()`) — same situation as the CRS bug below:
+  authored from documented/observed schema, not confirmed against a live
+  install. If labels don't appear, or the buffer/shadow don't render, the
   expression and field values are still fine (check via the layer's
   Attribute Table); it's specifically the labeling XML structure worth
   re-checking in Layer Properties → Labels.
@@ -67,14 +68,19 @@ wants, and it can then be regenerated correctly for good.
 |---|---|---|
 | Austria VHR Orthophoto (background) | basemap.at WMTS, live (not downloaded) | Raw imagery, no styling — a basemap reference |
 | Copernicus DEM GLO-30 (mosaic) | `data/dem_mosaic.vrt` (40 cached chunks) | Singleband pseudocolor, 5-stop interpolated ramp, blue→green→yellow→orange→red across the DEM's actual min/max (~103–3922 m) |
-| Obstacles (simple points) | `obstacles_simple_points.geojson` (1932 points) | Flat grey circle markers — a plain reference layer, not encoding any value |
+| Obstacles (simple points) | `obstacles_simple_points.geojson` (1932 points) | Grey circle markers. Point labels (see below). |
 | DEM vs obstacle base — difference | `obstacles_dem_diff.geojson` | Graduated, 6 classes on `error_single_m`, diverging blue (DEM reads below the obstacle base) → red (DEM reads above it), centered on zero. Point labels (see below). |
 
-## Difference-layer labels
+## Point labels
 
-Each point on the difference layer is labeled with both comparison values,
-one per line, each explicitly prefixed so it's unambiguous which number is
-which (per [output_fields.md](output_fields.md)'s field definitions):
+Both point layers are labeled, each with a two-line, explicitly-prefixed
+expression so it's unambiguous which number is which (per
+[output_fields.md](output_fields.md)'s field definitions) — and both use a
+white text buffer (halo) so the label stays legible regardless of what's
+underneath it. The difference layer's labels additionally have a drop
+shadow (as originally requested for that layer specifically).
+
+**Difference layer:**
 
 ```
 1px: 7.1 m
@@ -90,13 +96,25 @@ which (per [output_fields.md](output_fields.md)'s field definitions):
   the *entire* label (including the still-valid 1px line) disappear for
   those 4 points, not just the missing half.
 - Both values rounded to 1 decimal place for readability.
-- A drop shadow is applied to the label text (as requested), so it stays
-  legible over the DEM color ramp or the orthophoto background rather than
-  blending into busy imagery.
 
-The label expression and shadow settings live in `_build_diff_labeling()`
-in `build_qgis_project.py` — change the expression there (not by hand in
-the `.qgs`) if the label content needs to change later.
+**Obstacles layer:**
+
+```
+Type: Antennenmast / Antenna
+AGL: 55.0 m
+```
+
+- `Type:` is `obstacle_type`, shown as-is (bilingual German/English, as the
+  source provides it).
+- `AGL:` is `height_agl_m` — the obstacle's height above ground level. No
+  `coalesce()` needed here, unlike the diff layer's label: `height_agl_m`
+  is well-formed for all 1932 kept records (see obstacle_ingestion.md).
+
+Both label expressions and their settings (buffer, shadow) live in
+`_build_diff_labeling()` / `_build_obstacles_labeling()` in
+`build_qgis_project.py`, sharing a common `_build_label_settings()` helper
+— change the expressions there (not by hand in the `.qgs`) if label
+content needs to change later.
 
 ## Why basemap.at for the VHR background, and how the WMTS URL was verified
 

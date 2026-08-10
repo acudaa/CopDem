@@ -155,8 +155,13 @@ def _build_dem_layer(layer_id):
 
 
 def _build_points_layer(layer_id, geojson_path, layer_name, color="#606060"):
+    # NOTE: hardcodes the obstacles-layer label (obstacle_type/height_agl_m
+    # fields) below - fine while this is only called for the obstacles
+    # layer (currently true), but would break if ever reused for a
+    # differently-schematized point layer without also parameterizing the
+    # labeling call.
     maplayer = ET.Element("maplayer", type="vector", hasScaleBasedVisibilityFlag="0",
-                           geometry="Point")
+                           geometry="Point", labelsEnabled="1")
     ET.SubElement(maplayer, "id").text = layer_id
     ET.SubElement(maplayer, "datasource").text = f"./{geojson_path.relative_to(ROOT_DIR).as_posix()}"
     ET.SubElement(maplayer, "layername").text = layer_name
@@ -168,6 +173,8 @@ def _build_points_layer(layer_id, geojson_path, layer_name, color="#606060"):
                               symbollevels="0", enableorderby="0", forceraster="0")
     symbols = ET.SubElement(renderer, "symbols")
     _make_marker_symbol(symbols, "0", color)
+
+    maplayer.append(_build_obstacles_labeling())
     return maplayer
 
 
@@ -176,37 +183,63 @@ def _diff_ranges(breaks_colors):
     return breaks_colors
 
 
+def _build_label_settings(expression, font_size="8", with_shadow=False):
+    """Shared PAL labeling builder for both point layers. Buffer (white
+    halo behind the text) is always on - both layers requested it, and it's
+    the standard way to keep a label legible over a busy/colored background
+    regardless of what's directly under any given point. Shadow is
+    additionally requested for the difference layer only.
+    """
+    labeling = ET.Element("labeling", type="simple")
+    settings = ET.SubElement(labeling, "settings")
+    text_style = ET.SubElement(settings, "text-style", fieldName=expression, isExpression="1",
+                                fontFamily="MS Shell Dlg 2", fontSize=font_size, fontSizeUnit="Point",
+                                textColor="0,0,0,255", textOpacity="1", multilineHeight="1")
+    ET.SubElement(text_style, "text-buffer",
+                  bufferDraw="1", bufferSize="1", bufferSizeUnit="MM",
+                  bufferColor="255,255,255,255", bufferOpacity="1", bufferNoFill="0")
+
+    if with_shadow:
+        # Drop shadow, explicitly requested (difference layer only) for
+        # visibility over the DEM/orthophoto background.
+        ET.SubElement(settings, "shadow",
+                      shadowDraw="1", shadowUnder="0",
+                      shadowOffsetAngle="135", shadowOffsetDist="1", shadowOffsetGlobal="1",
+                      shadowOffsetUnit="MM", shadowRadius="1.5", shadowRadiusUnit="MM",
+                      shadowRadiusAlphaOnly="0", shadowOpacity="0.7",
+                      shadowColor="0,0,0,255", shadowScale="100")
+
+    ET.SubElement(settings, "placement", placement="0")  # 0 = AroundPoint
+    return labeling
+
+
 def _build_diff_labeling():
-    """Expression-based label: one line per value, each prefixed so it's
-    clear which number is which, with a drop shadow for visibility over
-    the DEM/orthophoto background. Uses coalesce() around the 5x5-median
-    half since that field is blank for the 4 obstacles whose window fell
-    off a chunk edge (see docs/dem_extraction.md) - without it, QGIS's ||
-    concatenation would make the WHOLE label text null for those 4 points.
+    """One line per value, each prefixed so it's clear which number is
+    which. Uses coalesce() around the 5x5-median half since that field is
+    blank for the 4 obstacles whose window fell off a chunk edge (see
+    docs/dem_extraction.md) - without it, QGIS's || concatenation would
+    make the WHOLE label text null for those 4 points, not just that half.
     """
     expression = (
         "'1px: ' || round(\"error_single_m\", 1) || ' m'"
         " || char(10) || "
         "'5x5 median: ' || coalesce(round(\"error_5x5_median_m\", 1) || ' m', 'n/a')"
     )
+    return _build_label_settings(expression, with_shadow=True)
 
-    labeling = ET.Element("labeling", type="simple")
-    settings = ET.SubElement(labeling, "settings")
-    text_style = ET.SubElement(settings, "text-style", fieldName=expression, isExpression="1",
-                                fontFamily="MS Shell Dlg 2", fontSize="8", fontSizeUnit="Point",
-                                textColor="0,0,0,255", textOpacity="1", multilineHeight="1")
-    ET.SubElement(text_style, "text-buffer", bufferDraw="0")
 
-    # Drop shadow, explicitly requested for visibility against busy backgrounds.
-    ET.SubElement(settings, "shadow",
-                  shadowDraw="1", shadowUnder="0",
-                  shadowOffsetAngle="135", shadowOffsetDist="1", shadowOffsetGlobal="1",
-                  shadowOffsetUnit="MM", shadowRadius="1.5", shadowRadiusUnit="MM",
-                  shadowRadiusAlphaOnly="0", shadowOpacity="0.7",
-                  shadowColor="0,0,0,255", shadowScale="100")
-
-    ET.SubElement(settings, "placement", placement="0")  # 0 = AroundPoint
-    return labeling
+def _build_obstacles_labeling():
+    """Obstacle type + height above ground, one per line, each prefixed.
+    height_agl_m is well-formed for all 1932 kept records (see
+    obstacle_ingestion.md - 0 unparseable AGL values among clean Point
+    rows), so no coalesce() is needed here unlike the diff layer's label.
+    """
+    expression = (
+        "'Type: ' || \"obstacle_type\""
+        " || char(10) || "
+        "'AGL: ' || round(\"height_agl_m\", 1) || ' m'"
+    )
+    return _build_label_settings(expression, with_shadow=False)
 
 
 def _build_diff_layer(layer_id):

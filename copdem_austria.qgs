@@ -15,14 +15,14 @@
     </spatialrefsys>
   </projectCrs>
   <layer-tree-group>
-    <layer-tree-layer providerKey="ogr" id="obstacles_diff_bbfcd8a8" name="DEM vs obstacle base - difference (error_single_m)" />
-    <layer-tree-layer providerKey="ogr" id="obstacles_points_c496b740" name="Obstacles (simple points)" />
-    <layer-tree-layer providerKey="gdal" id="dem_mosaic_4b02739a" name="Copernicus DEM GLO-30 (Austria mosaic)" />
-    <layer-tree-layer providerKey="wms" id="basemap_at_ortho_f83261a1" name="Austria VHR Orthophoto (basemap.at, background)" />
+    <layer-tree-layer providerKey="ogr" id="obstacles_diff_9cb8f72c" name="DEM vs obstacle base - difference (error_single_m)" />
+    <layer-tree-layer providerKey="ogr" id="obstacles_points_9a5ca33b" name="Obstacles (simple points)" />
+    <layer-tree-layer providerKey="gdal" id="dem_mosaic_d903272d" name="Copernicus DEM GLO-30 (Austria mosaic)" />
+    <layer-tree-layer providerKey="wms" id="basemap_at_ortho_9e2ef176" name="Austria VHR Orthophoto (basemap.at, background)" />
   </layer-tree-group>
   <projectlayers>
     <maplayer type="vector" hasScaleBasedVisibilityFlag="0" geometry="Point" labelsEnabled="1">
-      <id>obstacles_diff_bbfcd8a8</id>
+      <id>obstacles_diff_9cb8f72c</id>
       <datasource>./data/obstacles/austria/obstacles_dem_diff.geojson</datasource>
       <layername>DEM vs obstacle base - difference (error_single_m)</layername>
       <provider encoding="UTF-8">ogr</provider>
@@ -40,12 +40,12 @@
       </srs>
       <renderer-v3 type="graduatedSymbol" attr="error_single_m" graduatedMethod="GraduatedColor" symbollevels="0" enableorderby="0" forceraster="0">
         <ranges>
-          <range lower="-1000000.0" upper="-15" symbol="0" label="&lt; -15 m (DEM well below base)" render="true" uuid="{a9347cef-187e-4709-902d-b469d2e406d8}" />
-          <range lower="-15" upper="-5" symbol="1" label="-15 to -5 m" render="true" uuid="{0e8c4205-c115-483d-81d2-15327808612b}" />
-          <range lower="-5" upper="0" symbol="2" label="-5 to 0 m" render="true" uuid="{a3650bae-6cb4-4d17-9b08-8763dfe01fc1}" />
-          <range lower="0" upper="5" symbol="3" label="0 to 5 m" render="true" uuid="{4f1d0d06-1153-4a7e-9350-2df221d4f1ac}" />
-          <range lower="5" upper="15" symbol="4" label="5 to 15 m" render="true" uuid="{58828f97-2c16-44dd-8a38-1ca01524afc7}" />
-          <range lower="15" upper="1000000.0" symbol="5" label="&gt; 15 m (DEM well above base)" render="true" uuid="{508da01d-95d0-44e6-a16f-5f066e9512ad}" />
+          <range lower="-1000000.0" upper="-15" symbol="0" label="&lt; -15 m (DEM well below base)" render="true" uuid="{9d89ac38-2ae7-4f7a-9b28-a074ba21f083}" />
+          <range lower="-15" upper="-5" symbol="1" label="-15 to -5 m" render="true" uuid="{6cfa5570-b09a-4632-b08e-60096e9a4991}" />
+          <range lower="-5" upper="0" symbol="2" label="-5 to 0 m" render="true" uuid="{11e9d2bf-88f7-4b47-a2c6-04abd1d3c7b6}" />
+          <range lower="0" upper="5" symbol="3" label="0 to 5 m" render="true" uuid="{8eee24fb-0f5d-40b4-9f75-1346a68ae8be}" />
+          <range lower="5" upper="15" symbol="4" label="5 to 15 m" render="true" uuid="{e16b0303-4e94-4af3-b54f-ef3a4bcd5b61}" />
+          <range lower="15" upper="1000000.0" symbol="5" label="&gt; 15 m (DEM well above base)" render="true" uuid="{53dd7d2f-6bb8-4acd-a426-96a8343bc95d}" />
         </ranges>
         <symbols>
           <symbol type="marker" name="0" alpha="1" clip_to_extent="1" force_rhr="0">
@@ -149,15 +149,15 @@
       <labeling type="simple">
         <settings>
           <text-style fieldName="'1px: ' || round(&quot;error_single_m&quot;, 1) || ' m' || char(10) || '5x5 median: ' || coalesce(round(&quot;error_5x5_median_m&quot;, 1) || ' m', 'n/a')" isExpression="1" fontFamily="MS Shell Dlg 2" fontSize="8" fontSizeUnit="Point" textColor="0,0,0,255" textOpacity="1" multilineHeight="1">
-            <text-buffer bufferDraw="0" />
+            <text-buffer bufferDraw="1" bufferSize="1" bufferSizeUnit="MM" bufferColor="255,255,255,255" bufferOpacity="1" bufferNoFill="0" />
           </text-style>
           <shadow shadowDraw="1" shadowUnder="0" shadowOffsetAngle="135" shadowOffsetDist="1" shadowOffsetGlobal="1" shadowOffsetUnit="MM" shadowRadius="1.5" shadowRadiusUnit="MM" shadowRadiusAlphaOnly="0" shadowOpacity="0.7" shadowColor="0,0,0,255" shadowScale="100" />
           <placement placement="0" />
         </settings>
       </labeling>
     </maplayer>
-    <maplayer type="vector" hasScaleBasedVisibilityFlag="0" geometry="Point">
-      <id>obstacles_points_c496b740</id>
+    <maplayer type="vector" hasScaleBasedVisibilityFlag="0" geometry="Point" labelsEnabled="1">
+      <id>obstacles_points_9a5ca33b</id>
       <datasource>./data/obstacles/austria/obstacles_simple_points.geojson</datasource>
       <layername>Obstacles (simple points)</layername>
       <provider encoding="UTF-8">ogr</provider>
@@ -193,9 +193,17 @@
           </symbol>
         </symbols>
       </renderer-v3>
+      <labeling type="simple">
+        <settings>
+          <text-style fieldName="'Type: ' || &quot;obstacle_type&quot; || char(10) || 'AGL: ' || round(&quot;height_agl_m&quot;, 1) || ' m'" isExpression="1" fontFamily="MS Shell Dlg 2" fontSize="8" fontSizeUnit="Point" textColor="0,0,0,255" textOpacity="1" multilineHeight="1">
+            <text-buffer bufferDraw="1" bufferSize="1" bufferSizeUnit="MM" bufferColor="255,255,255,255" bufferOpacity="1" bufferNoFill="0" />
+          </text-style>
+          <placement placement="0" />
+        </settings>
+      </labeling>
     </maplayer>
     <maplayer type="raster" hasScaleBasedVisibilityFlag="0">
-      <id>dem_mosaic_4b02739a</id>
+      <id>dem_mosaic_d903272d</id>
       <datasource>./data/dem_mosaic.vrt</datasource>
       <layername>Copernicus DEM GLO-30 (Austria mosaic)</layername>
       <provider encoding="UTF-8">gdal</provider>
@@ -229,7 +237,7 @@
       </pipe>
     </maplayer>
     <maplayer type="raster" hasScaleBasedVisibilityFlag="0">
-      <id>basemap_at_ortho_f83261a1</id>
+      <id>basemap_at_ortho_9e2ef176</id>
       <datasource>contextualWMSLegend=0&amp;crs=EPSG:3857&amp;dpiMode=7&amp;format=image/jpeg&amp;layers=bmaporthofoto30cm&amp;styles=normal&amp;tileMatrixSet=google3857_0-17&amp;url=https://maps.wien.gv.at/basemap/1.0.0/WMTSCapabilities.xml</datasource>
       <layername>Austria VHR Orthophoto (basemap.at, background)</layername>
       <provider encoding="UTF-8">wms</provider>
