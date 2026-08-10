@@ -176,9 +176,42 @@ def _diff_ranges(breaks_colors):
     return breaks_colors
 
 
+def _build_diff_labeling():
+    """Expression-based label: one line per value, each prefixed so it's
+    clear which number is which, with a drop shadow for visibility over
+    the DEM/orthophoto background. Uses coalesce() around the 5x5-median
+    half since that field is blank for the 4 obstacles whose window fell
+    off a chunk edge (see docs/dem_extraction.md) - without it, QGIS's ||
+    concatenation would make the WHOLE label text null for those 4 points.
+    """
+    expression = (
+        "'1px: ' || round(\"error_single_m\", 1) || ' m'"
+        " || char(10) || "
+        "'5x5 median: ' || coalesce(round(\"error_5x5_median_m\", 1) || ' m', 'n/a')"
+    )
+
+    labeling = ET.Element("labeling", type="simple")
+    settings = ET.SubElement(labeling, "settings")
+    text_style = ET.SubElement(settings, "text-style", fieldName=expression, isExpression="1",
+                                fontFamily="MS Shell Dlg 2", fontSize="8", fontSizeUnit="Point",
+                                textColor="0,0,0,255", textOpacity="1", multilineHeight="1")
+    ET.SubElement(text_style, "text-buffer", bufferDraw="0")
+
+    # Drop shadow, explicitly requested for visibility against busy backgrounds.
+    ET.SubElement(settings, "shadow",
+                  shadowDraw="1", shadowUnder="0",
+                  shadowOffsetAngle="135", shadowOffsetDist="1", shadowOffsetGlobal="1",
+                  shadowOffsetUnit="MM", shadowRadius="1.5", shadowRadiusUnit="MM",
+                  shadowRadiusAlphaOnly="0", shadowOpacity="0.7",
+                  shadowColor="0,0,0,255", shadowScale="100")
+
+    ET.SubElement(settings, "placement", placement="0")  # 0 = AroundPoint
+    return labeling
+
+
 def _build_diff_layer(layer_id):
     maplayer = ET.Element("maplayer", type="vector", hasScaleBasedVisibilityFlag="0",
-                           geometry="Point")
+                           geometry="Point", labelsEnabled="1")
     ET.SubElement(maplayer, "id").text = layer_id
     ET.SubElement(maplayer, "datasource").text = f"./{DIFF_GEOJSON.relative_to(ROOT_DIR).as_posix()}"
     ET.SubElement(maplayer, "layername").text = "DEM vs obstacle base - difference (error_single_m)"
@@ -207,6 +240,8 @@ def _build_diff_layer(layer_id):
         ET.SubElement(ranges_el, "range", lower=str(lower), upper=str(upper),
                       symbol=symbol_name, label=label, render="true", uuid=_uuid())
         _make_marker_symbol(symbols_el, symbol_name, color, size="2.8")
+
+    maplayer.append(_build_diff_labeling())
     return maplayer
 
 
