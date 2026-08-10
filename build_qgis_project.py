@@ -183,12 +183,25 @@ def _diff_ranges(breaks_colors):
     return breaks_colors
 
 
-def _build_label_settings(expression, font_size="8", with_shadow=False):
+def _build_label_settings(expression, font_size="8", with_shadow=False,
+                           quad_offset="4", offset_mm="0"):
     """Shared PAL labeling builder for both point layers. Buffer (white
     halo behind the text) is always on - both layers requested it, and it's
     the standard way to keep a label legible over a busy/colored background
     regardless of what's directly under any given point. Shadow is
     additionally requested for the difference layer only.
+
+    quad_offset/offset_mm: matters because the obstacles layer and the diff
+    layer plot at IDENTICAL coordinates (the diff GeoJSON is the obstacles
+    GeoJSON plus extra columns, same 1932 points) - with both layers'
+    labels anchored at zero offset from the same point and PAL's default
+    overlap prevention on, only one layer's label survives per point (fixed
+    live in copdem_austria.qgs by offsetting the two layers to opposite
+    quadrants with a real physical distance - see docs/qgis_project.md).
+    Callers with coincident geometry MUST pass different quad_offset/
+    offset_mm than any other labeled layer sharing those coordinates.
+    quadOffset values: 1=Above, 2=AboveRight, 7=Below, 8=BelowRight, etc.
+    (QGIS's QgsPalLayerSettings::QuadrantPosition enum).
     """
     labeling = ET.Element("labeling", type="simple")
     settings = ET.SubElement(labeling, "settings")
@@ -209,7 +222,15 @@ def _build_label_settings(expression, font_size="8", with_shadow=False):
                       shadowRadiusAlphaOnly="0", shadowOpacity="0.7",
                       shadowColor="0,0,0,255", shadowScale="100")
 
-    ET.SubElement(settings, "placement", placement="0")  # 0 = AroundPoint
+    # placement="1" = OverPoint (offset-from-point, quadrant + distance),
+    # NOT "0"/AroundPoint used in earlier versions of this script - matches
+    # what QGIS itself wrote back on resave, and gives deterministic,
+    # explicitly-separated positions rather than relying on PAL's automatic
+    # search to happen to pick non-overlapping spots for coincident points.
+    ET.SubElement(settings, "placement", placement="1", quadOffset=quad_offset,
+                  offsetUnits="MM", xOffset="0", yOffset=offset_mm,
+                  distUnits="MM", dist=offset_mm.lstrip("-") or "0",
+                  overlapHandling="PreventOverlap")
     return labeling
 
 
@@ -225,7 +246,9 @@ def _build_diff_labeling():
         " || char(10) || "
         "'5x5 median: ' || coalesce(round(\"error_5x5_median_m\", 1) || ' m', 'n/a')"
     )
-    return _build_label_settings(expression, with_shadow=True)
+    # AboveRight, pushed up 4mm - obstacles layer (same coordinates) is
+    # pushed the opposite direction below, see _build_obstacles_labeling().
+    return _build_label_settings(expression, with_shadow=True, quad_offset="2", offset_mm="-4")
 
 
 def _build_obstacles_labeling():
@@ -239,7 +262,9 @@ def _build_obstacles_labeling():
         " || char(10) || "
         "'AGL: ' || round(\"height_agl_m\", 1) || ' m'"
     )
-    return _build_label_settings(expression, with_shadow=False)
+    # BelowRight, pushed down 4mm - opposite direction from the diff
+    # layer's AboveRight/-4mm, since both layers label the same coordinates.
+    return _build_label_settings(expression, with_shadow=False, quad_offset="8", offset_mm="4")
 
 
 def _build_diff_layer(layer_id):

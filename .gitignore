@@ -6,5 +6,6 @@ site/
 .env
 .env.bak
 *.bak
+*~
 .DS_Store
 data/
