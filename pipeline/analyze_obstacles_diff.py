@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """Generate a self-contained static HTML analytical report for
 obstacles_dem_diff.csv: distribution + summary statistics for
-error_single_m (the single-cell DEM-vs-obstacle-base error) and
-dem_5x5_median_egm2008_m (the 5x5-window median DEM elevation — a raw
-elevation value, NOT an error, on EGM2008), for the whole dataset and
-broken down by obstacle type.
+error_single_m and error_5x5_median_m (the single-cell and 5x5-window-
+median DEM-vs-obstacle-base errors, both signed, both on EGM2008), for the
+whole dataset and broken down by obstacle type.
+
+NOTE: an earlier version of this report used dem_5x5_median_egm2008_m
+(a raw DEM elevation, ~814m mean across Austria) instead of
+error_5x5_median_m (the actual discrepancy, ~1-2m typical) - a real
+labeling mistake, not a computation bug, caught when a reader reasonably
+read "813m" as a DEM error. See docs/analysis_report.md for the full story.
 
 Charts are hand-rolled inline SVG (no external chart library / CDN), per
 the dataviz skill: histograms use the diverging blue/red pair for the
@@ -30,11 +35,11 @@ FIELDS = {
         "kind": "diverging",  # signed, centered on 0
         "description": "DEM (single-cell, bilinear) minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base.",
     },
-    "dem_5x5_median_egm2008_m": {
-        "label": "5×5-window median DEM elevation",
+    "error_5x5_median_m": {
+        "label": "5×5-window median error",
         "unit": "m",
-        "kind": "sequential",  # unsigned magnitude, NOT an error
-        "description": "Raw DEM elevation (EGM2008) — the median of the 25 cells around each obstacle. Not an error value; shown for its own distribution across the dataset.",
+        "kind": "diverging",  # signed, centered on 0
+        "description": "5x5-window median DEM value minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base. (Earlier version of this report used dem_5x5_median_egm2008_m here by mistake - that's a raw elevation, not a discrepancy; see docs/analysis_report.md.)",
     },
 }
 
@@ -289,7 +294,7 @@ def build_report():
         bar_svgs[field_key] = svg_bar_by_type(ts, meta["kind"], meta["label"])
 
     n_total = len(rows)
-    n_window = overall["dem_5x5_median_egm2008_m"]["n"]
+    n_window = overall["error_5x5_median_m"]["n"]
 
     sections = []
     for field_key, meta in FIELDS.items():
