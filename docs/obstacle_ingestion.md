@@ -64,14 +64,58 @@ coordinates — both fields were 100% well-formed across all 1939 Point rows
 | Output field | Source column | Decision |
 |---|---|---|
 | `lon`, `lat` | `Koordinaten (Dezimalgrad)` | Parsed from the decimal-degree field (not the DMS field) — it's already in the exact form needed, avoiding a DMS-parsing step that would just reintroduce rounding. The field is space-separated `"LAT LON"` (matches the DMS field's N-then-E order); confirmed via the metadata sheet that the horizontal CRS is EPSG:4326. |
-| `elev_amsl_m` | `Maximale Höhe AMSL (M / FT)` | Only the metres value is kept; the feet value is redundant (derivable) and metres matches the DEM's unit. |
-| `elev_amsl_vertical_crs_epsg` | (derived, constant `9274`) | See "Vertical datum" below — every Austria record gets the same source vertical CRS. |
-| `elev_amsl_egm2008_m` | (computed) | `elev_amsl_m` converted to EGM2008 via `vertical_datum.to_egm2008()`, per-point (position-dependent — see [vertical_datum.py](../vertical_datum.py)). **This is the field the DEM comparison should actually use.** |
-| `height_agl_m` | `Maximale Höhe AGL (M / FT)` | Same metres-only parsing as AMSL. Kept for context/QC (e.g. cross-checking the single-cell-vs-5×5 "capture signal" diagnostic against the obstacle's actual height), not used directly in the base-elevation comparison. |
+| `elev_top_amsl_m` | `Maximale Höhe AMSL (M / FT)` | Metres value only (feet is redundant). This is the obstacle's **top** elevation — see the correction section above. Kept for reference/QC, not the primary comparison field. |
+| `height_agl_m` | `Maximale Höhe AGL (M / FT)` | Same metres-only parsing. Used to derive base elevation (below), and kept standalone for the single-cell-vs-5×5 "capture signal" diagnostic. |
+| `elev_base_amsl_m` | (computed) | `elev_top_amsl_m - height_agl_m`. **This is the obstacle base elevation** — what the DEM comparison actually targets. |
+| `elev_vertical_crs_epsg` | (derived, constant `9274`) | See "Vertical datum" below — every Austria record gets the same source vertical CRS. |
+| `elev_base_egm2008_m` | (computed) | `elev_base_amsl_m` converted to EGM2008 via `vertical_datum.to_egm2008()`, per-point (position-dependent — see [vertical_datum.py](../vertical_datum.py)). **This is the field `extract_dem.py` compares the DEM against.** |
+| `elev_top_egm2008_m` | (computed) | Same conversion applied to the top elevation — kept for QC/reference, not used in the primary comparison. |
 | `horizontal_accuracy_m`, `vertical_accuracy_elev_m`, `vertical_accuracy_agl_m` | `Horizontale Genauigkeit`, `Vertikale Genauigkeit ...` | Parsed to a float in metres where stated; **`None` (not `0`) where the source says `---`**. A missing accuracy claim must never be silently treated as a perfect (zero-error) claim — that would bias any accuracy-weighted analysis. Only ~8% of Point records have a stated accuracy at all. |
 | `day_marking`, `lighted` | `Tageskenn-zeichnung`, `Befeuert` | Parsed `ja/yes` → `True`, `nein/no` → `False`. Not used in the DEM comparison itself; kept for possible future stratification (marked/lit obstacles may correlate with height/prominence). |
 | — | `Datenqualitäts-anforderungen eingehalten` | **Not carried through at all.** Checked: this field is `---` (empty) for all 1932 kept records — it exists in the schema but is unpopulated in this data release, so there's nothing to extract. |
 | — | `Horizontale Ausdehnung (Länge x Breite / Radius)` | **Not carried through.** Essentially always `---` for point obstacles (2 exceptions among all Point rows, not investigated) — extent doesn't meaningfully apply to a point geometry. |
+
+## Critical correction: "Maximale Höhe AMSL" is the obstacle's TOP elevation, not its base
+
+This was caught by a sanity check on the DEM comparison output, not during
+ingestion itself, and is worth recording prominently because it produced
+plausible-*looking* wrong numbers rather than an obvious failure.
+
+**What happened:** v1 originally treated `Maximale Höhe AMSL` directly as
+the obstacle's base elevation (matching this study's actual goal — see the
+top of this doc). Running the DEM comparison against it gave a mean
+"error" of **−42.6 m**, decisively too large to be real DEM error (Copernicus
+DEM's known accuracy is a few metres).
+
+**Root cause:** `Maximale Höhe AMSL` is the ICAO "ELEV" convention — the
+elevation of the obstacle's **top**, not its base. The source's own footnote
+(`* Fußpunkthöhe — Maximale Höhe AMSL gemessen am Fußpunkt des Hindernisses
+/ ELEV measured at the base of the OBST`) marks the *exception*: records
+flagged with `*` use base elevation instead. None of the 1932 kept Point
+records carry that flag (confirmed: 0 occurrences), so 100% of them use the
+default top-elevation convention.
+
+**How this was confirmed, not just suspected:** correlation between the
+(wrong) error and `height_agl_m` was **r = −0.95** — near-perfect — and
+`error + height_agl_m` clustered at mean 5.25 m / stdev 8.8 m, a plausible
+DEM-accuracy figure. That's the signature of "the obstacle's own height is
+leaking into the error metric," not real terrain-comparison noise.
+
+**Fix:** base elevation is computed as `elev_base_amsl_m = elev_top_amsl_m -
+height_agl_m`, and *that* is what gets converted to EGM2008 and compared
+against the DEM. Both top and base EGM2008 values are kept in the output
+(`elev_top_egm2008_m`, `elev_base_egm2008_m`) so this can be sanity-checked
+again later if needed. After the fix, `error_single_m` has mean 5.25 m /
+stdev 8.8 m — consistent with the correlation check above, and in a
+plausible range for Copernicus DEM's known accuracy.
+
+**Lesson for future country sources:** don't assume a column named
+"elevation" or "AMSL" for an obstacle record means base elevation — ICAO
+obstacle data conventionally reports the top (that's the safety-relevant
+figure for aviation), and this needs to be checked per source, not assumed
+uniformly. Same category of mistake as the vertical-datum assumption below:
+verify against the source's own documentation, then confirm numerically
+before trusting results.
 
 ## Vertical datum: why EVRF2000 Austria, not the generic EGM96 assumption
 

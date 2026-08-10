@@ -105,6 +105,7 @@ def load_simple_point_obstacles(xlsx_path=None):
         "missing_id": 0,
         "unparseable_amsl": 0,
         "unparseable_coord": 0,
+        "missing_agl_for_base": 0,
         "kept": 0,
     }
 
@@ -132,11 +133,22 @@ def load_simple_point_obstacles(xlsx_path=None):
             continue
         lat, lon = float(coord_dd[0]), float(coord_dd[1])
 
-        elev_amsl_m = _parse_m_ft_pair(row[COL_AMSL])
-        if elev_amsl_m is None:
+        # "Maximale Hoehe AMSL" is the obstacle's TOP elevation (ICAO "ELEV"
+        # convention), NOT its base — confirmed empirically (see
+        # docs/obstacle_ingestion.md): treating it as base elevation gave a
+        # ~-43 m mean "DEM error" that correlated at r=-0.95 with AGL height,
+        # i.e. it was just the obstacle's own height showing up as bogus
+        # error. Base elevation = top elevation - AGL height. The unmarked
+        # (non-"*") convention applies to 100% of our clean Point rows.
+        elev_top_amsl_m = _parse_m_ft_pair(row[COL_AMSL])
+        if elev_top_amsl_m is None:
             counts["unparseable_amsl"] += 1
             continue
         height_agl_m = _parse_m_ft_pair(row[COL_AGL])
+        elev_base_amsl_m = elev_top_amsl_m - height_agl_m if height_agl_m is not None else None
+        if elev_base_amsl_m is None:
+            counts["missing_agl_for_base"] += 1
+            continue
 
         vertical_ref = row[COL_VERTICAL_REF]
         assert vertical_ref == "EVRS", (
@@ -144,7 +156,8 @@ def load_simple_point_obstacles(xlsx_path=None):
             "the EVRF2000 Austria conversion assumes EVRS uniformly; re-check "
             "docs/obstacle_ingestion.md before trusting this record."
         )
-        elev_amsl_egm2008_m = to_egm2008(lon, lat, elev_amsl_m, COUNTRY_VERTICAL_EPSG)
+        elev_base_egm2008_m = to_egm2008(lon, lat, elev_base_amsl_m, COUNTRY_VERTICAL_EPSG)
+        elev_top_egm2008_m = to_egm2008(lon, lat, elev_top_amsl_m, COUNTRY_VERTICAL_EPSG)
 
         obstacles.append({
             "id": obstacle_id,
@@ -154,9 +167,11 @@ def load_simple_point_obstacles(xlsx_path=None):
             "obstacle_type": row[COL_TYPE],
             "lon": lon,
             "lat": lat,
-            "elev_amsl_m": elev_amsl_m,
-            "elev_amsl_vertical_crs_epsg": COUNTRY_VERTICAL_EPSG,
-            "elev_amsl_egm2008_m": elev_amsl_egm2008_m,
+            "elev_top_amsl_m": elev_top_amsl_m,
+            "elev_base_amsl_m": elev_base_amsl_m,
+            "elev_vertical_crs_epsg": COUNTRY_VERTICAL_EPSG,
+            "elev_base_egm2008_m": elev_base_egm2008_m,
+            "elev_top_egm2008_m": elev_top_egm2008_m,
             "height_agl_m": height_agl_m,
             "day_marking": _parse_yes_no(row[COL_DAY_MARKING]),
             "lighted": _parse_yes_no(row[COL_LIGHTED]),
