@@ -9,3 +9,6 @@ site/
 *~
 .DS_Store
 data/
+reports/word/*.pdf
+reports/word/*.jpg
+reports/word/_charts/

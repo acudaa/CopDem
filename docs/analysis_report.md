@@ -6,6 +6,44 @@ A self-contained static HTML report (no build step, no CDN dependency) —
 open the file directly in a browser, or regenerate it after any pipeline
 re-run: `python pipeline/analyze_obstacles_diff.py`.
 
+## Word (.docx) export
+
+[`pipeline/export_word_reports.py`](../pipeline/export_word_reports.py)
+produces MS Word versions of both this report and the raster-diff report
+(`docs/lidar_comparison.md`'s companion), for sharing with readers who
+want an offline/printable document rather than an HTML file:
+`reports/word/CopDem_Austria_Obstacle_Analysis.docx` and
+`reports/word/CopDem_Austria_Raster_Analysis.docx`. It's a separate
+generator, not a converted copy — it imports `analyze_obstacles_diff.py`
+and `analyze_lidar_raster_diff.py` directly (same `load_rows`,
+`compute_stats`, `histogram`, `by_type_stats` functions) so the numbers
+can't drift between the HTML and Word versions, but renders charts with
+matplotlib (static PNGs) and tables with `python-docx` instead of
+SVG/HTML, since Word has no equivalent of an interactive hover tooltip.
+Regenerate with `python pipeline/export_word_reports.py` after any
+pipeline re-run — it does not run automatically alongside the HTML
+generators.
+
+Two implementation gotchas worth knowing if this file is touched again:
+- **Table column widths**: setting `cell.width` per-cell does *not*
+  update the table's underlying `<w:tblGrid><w:gridCol>` XML, which is
+  what actually controls fixed-layout column widths in Word/LibreOffice —
+  `table.columns[i].width = Cm(...)` is required, or columns silently
+  revert to auto-sizing and long labels wrap into narrow towers.
+- **Histogram bars**: plotting bars at their true value-proportional
+  x-position (`ax.bar((lo+hi)/2, count, width=(hi-lo)*0.92)`) compresses
+  the visible distribution into a single spike once percentile-core
+  binning + wide catch-all tail bins are in play (same class of bug fixed
+  in the HTML report's `svg_histogram()` — see below). Bars must be
+  plotted by index with equal width (`align="edge"`), with a
+  `value_to_x()` helper mapping back to real values only for tick labels.
+
+Rendering was verified by converting each `.docx` to PDF (LibreOffice
+`soffice.exe --headless --convert-to pdf`) and rendering PDF pages to
+JPG (`pymupdf`) for visual inspection — python-docx/matplotlib can
+produce a structurally valid file that still renders wrong, the same way
+`svg_histogram()` needed the browser preview, not just code review.
+
 ## Correction: the report originally showed the wrong field
 
 The first version of this report used `dem_5x5_median_egm2008_m` for the
@@ -52,10 +90,13 @@ incident above, grouping by source is a structural safeguard against a
 similar misreading, not just another caption.
 
 **LiDAR caveat, restated here because it matters for every LiDAR number in
-this report**: the LiDAR DEM's vertical datum (EVRF2000 Austria) is an
-*instructed* assumption, not independently verified the way every other
-datum decision in this project was — see lidar_comparison.md's "Vertical
-reference" section.
+this report**: the LiDAR DEM's vertical datum is GHA height (EPSG:5778,
+"Adria Triest") — **not** EVRF2000 Austria, the datum used for the
+obstacle data. This was matched to BEV's own product-line documentation
+and confirmed numerically (an earlier version of this pipeline wrongly
+assumed EVRF2000 Austria for the LiDAR source too; see
+lidar_comparison.md's "Vertical reference" section for the full
+correction history).
 
 ## Chart design (per the dataviz skill)
 
