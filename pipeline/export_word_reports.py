@@ -107,8 +107,8 @@ def plot_histogram(bins, out_path, xlabel="m", core_lo=None, core_hi=None,
     # Snap whichever tick lands nearest zero to exactly 0 (same fix applied
     # to both HTML reports' svg_histogram()) - core_lo/core_hi are percentile
     # bounds, not symmetric about zero, so even spacing alone usually misses
-    # an exact "0" label; readers need "no error" to be a visible tick, not
-    # just the unlabeled zero-line drawn above.
+    # an exact "0" label; readers need "no discrepancy" to be a visible
+    # tick, not just the unlabeled zero-line drawn above.
     tick_fracs = (0, 0.25, 0.5, 0.75, 1)
     tick_vals = [core_lo + frac * (core_hi - core_lo) for frac in tick_fracs]
     if core_lo < 0 < core_hi:
@@ -347,7 +347,7 @@ def build_raster_report():
         "outermost bars (if present) are catch-alls for everything beyond, spanning the true "
         "min/max. No value clipping is applied to this raster — a handful of pixels in "
         "extreme terrain (e.g. steep peaks/ridgelines, where InSAR-derived DEMs like CopDEM are "
-        "known to have large errors) can dominate the true min/max; see docs/lidar_comparison.md "
+        "known to have large discrepancies) can dominate the true min/max; see docs/lidar_comparison.md "
         "for a specific, individually-verified example near Grossglockner."
     ).runs[0].font.bold = True
 
@@ -405,6 +405,33 @@ def build_montenegro_obstacle_report():
     for run in scope_p.runs:
         run.font.size = Pt(9)
         run.font.italic = True
+
+    doc.add_heading("How the discrepancy is calculated", level=1)
+    doc.add_paragraph(
+        "discrepancy = DEM value − obstacle base elevation, always in that order, always in "
+        "metres, always on the EGM2008 vertical reference (Copernicus DEM's native geoid)."
+    )
+    calc_p = doc.add_paragraph()
+    calc_p.add_run("Positive discrepancy").bold = True
+    calc_p.add_run(
+        " → the DEM reads higher than the true ground at the obstacle's base. Plausible "
+        "causes: CopDEM (a DSM) partly seeing the obstacle's own structure or nearby "
+        "vegetation rather than bare ground, or a genuine DEM overestimate."
+    )
+    calc_p2 = doc.add_paragraph()
+    calc_p2.add_run("Negative discrepancy").bold = True
+    calc_p2.add_run(
+        " → the DEM reads lower than the true ground. Plausible causes: a genuine DEM "
+        "underestimate, local terrain the DEM smooths over, or occasionally an imprecise "
+        "obstacle coordinate."
+    )
+    doc.add_paragraph(
+        "Two versions of this same subtraction are reported below: single-cell (the DEM's "
+        "value at the obstacle's exact position, bilinear-interpolated) and 5×5-window median "
+        "(the median DEM value across a 5×5-cell neighbourhood around the obstacle, ~150×150m "
+        "at CopDEM's native resolution) — same subtraction, same sign convention, different way "
+        "of sampling the DEM. See docs/output_fields.md for the full field reference."
+    )
 
     doc.add_heading("Overview", level=1)
     headers = ["Field", "n", "mean", "median", "stdev", "p5", "p95", "min", "max"]

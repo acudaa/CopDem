@@ -76,7 +76,7 @@ def histogram(values, n_bins=30, tail_percentile=1):
     """Bins the CORE of the distribution (tail_percentile to 100-tail_percentile)
     at full resolution, plus one explicit catch-all bin at each end covering
     everything beyond that - so extreme values (e.g. the Grossglockner-area
-    peak errors, now unclipped - see docs/lidar_comparison.md) are still
+    peak discrepancies, now unclipped - see docs/lidar_comparison.md) are still
     counted and visible in their own bin, not silently excluded from the
     chart just because binning the true min-to-max range would compress the
     actual distribution into a single spike. Returns (bins, core_lo, core_hi)
@@ -170,8 +170,8 @@ def svg_histogram(bins, core_lo, core_hi, core_start_idx, core_end_idx, width=76
     # analyze_obstacles_diff.py's svg_histogram) - core_lo/core_hi are
     # percentile bounds, not symmetric about zero, so plain even spacing
     # over (0, 0.25, 0.5, 0.75, 1) usually lands on something like "-2" or
-    # "6" rather than an exact, labeled 0 - readers need "no error" to be a
-    # visible tick, not just the unlabeled zero-line drawn above.
+    # "6" rather than an exact, labeled 0 - readers need "no discrepancy" to
+    # be a visible tick, not just the unlabeled zero-line drawn above.
     tick_fracs = (0, 0.25, 0.5, 0.75, 1)
     tick_vals = [core_lo + frac * (core_hi - core_lo) for frac in tick_fracs]
     if core_lo < 0 < core_hi:
@@ -328,7 +328,7 @@ def build_report():
     <p class="chart-caption">Bins span the 1st&#8211;99th percentile at full resolution; the faded end bars
        (if present) are catch-alls for everything beyond &#8212; hover for their real extent. Binning the
        true min/max instead would compress this chart to a single spike, since a handful of extreme-terrain
-       cells (steep peaks/ridgelines, where CopDEM is known to have large errors &#8212; see the footer)
+       cells (steep peaks/ridgelines, where CopDEM is known to have large discrepancies &#8212; see the footer)
        span a much wider range than the rest of the data.</p>
     {hist_svg}
     <h4>Summary statistics</h4>
@@ -340,7 +340,7 @@ def build_report():
     raster comparison with no natural category to group by. No value clipping is applied to this
     raster &#8212; min/max are real, unbounded extremes, and can be dominated by a handful of
     pixels in extreme terrain (e.g. steep peaks/ridgelines, where InSAR-derived DEMs like CopDEM
-    are known to have large errors from radar layover/foreshortening &#8212; see
+    are known to have large discrepancies from radar layover/foreshortening &#8212; see
     docs/lidar_comparison.md for a specific, individually-verified example near Grossglockner).
     p1/p99 are shown alongside as the more representative tail measure, less sensitive to a
     small number of such extreme cells.

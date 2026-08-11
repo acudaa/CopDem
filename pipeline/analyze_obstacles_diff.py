@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
 """Generate a self-contained static HTML analytical report for
 obstacles_dem_diff.csv: distribution + summary statistics for the
-single-cell and 5x5-window-median DEM-vs-obstacle-base errors (both
+single-cell and 5x5-window-median DEM-vs-obstacle-base discrepancies (both
 signed, both on EGM2008), for BOTH DEM sources compared in this project
 (Copernicus DEM GLO-30 and Austria's LiDAR-derived DHM), for the whole
 dataset and broken down by obstacle type. Sections are grouped by source
 so the two products' numbers - which differ by roughly an order of
-magnitude in typical error (CopDEM ~5m, LiDAR ~0m mean) - are never read
-as an undifferentiated list of four similar-looking cards.
+magnitude in typical discrepancy (CopDEM ~5m, LiDAR ~0m mean) - are never
+read as an undifferentiated list of four similar-looking cards.
 
 NOTE: an earlier version of this report used dem_5x5_median_egm2008_m
 (a raw DEM elevation, ~814m mean across Austria) instead of
 error_5x5_median_m (the actual discrepancy, ~1-2m typical) - a real
 labeling mistake, not a computation bug, caught when a reader reasonably
-read "813m" as a DEM error. See docs/analysis_report.md for the full story.
+read "813m" as a DEM discrepancy. See docs/analysis_report.md for the full
+story. (Column names in the CSV/code still say "error" - e.g.
+error_single_m - that's the underlying data schema and is unchanged; only
+the report-facing wording says "discrepancy" now, per user request.)
 
 Charts are hand-rolled inline SVG (no external chart library / CDN), per
 the dataviz skill: histograms use the diverging blue/red pair for the
-signed error field and sequential blue for the unsigned elevation field;
-by-type bar charts are horizontal (obstacle type names are long); every
-mark carries a hover tooltip.
+signed discrepancy field and sequential blue for the unsigned elevation
+field; by-type bar charts are horizontal (obstacle type names are long);
+every mark carries a hover tooltip.
 
 See docs/output_fields.md for what each field means.
 """
@@ -35,28 +38,28 @@ OUTPUT_HTML = ROOT_DIR / "reports" / "obstacles_dem_diff_analysis.html"
 FIELDS = {
     "error_single_m": {
         "group": "Copernicus DEM GLO-30",
-        "label": "Single-cell error",
+        "label": "Single-cell discrepancy",
         "unit": "m",
         "kind": "diverging",  # signed, centered on 0
         "description": "DEM (single-cell, bilinear) minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base.",
     },
     "error_5x5_median_m": {
         "group": "Copernicus DEM GLO-30",
-        "label": "5×5-window median error",
+        "label": "5×5-window median discrepancy",
         "unit": "m",
         "kind": "diverging",  # signed, centered on 0
         "description": "5x5-window median DEM value minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base.",
     },
     "error_single_lidar_m": {
         "group": "Austria LiDAR DEM (dhm_at_lamb_10m_2018)",
-        "label": "Single-cell error",
+        "label": "Single-cell discrepancy",
         "unit": "m",
         "kind": "diverging",
         "description": "LiDAR DEM (single-cell, bilinear) minus obstacle base elevation, both on EGM2008. Positive = LiDAR reads above the true base. Vertical datum: GHA height (EPSG:5778, 'Adria Triest'), matched to BEV's product-line documentation and confirmed numerically, though not to this exact file's own embedded metadata. See docs/lidar_comparison.md.",
     },
     "error_5x5_median_lidar_m": {
         "group": "Austria LiDAR DEM (dhm_at_lamb_10m_2018)",
-        "label": "5×5-window median error",
+        "label": "5×5-window median discrepancy",
         "unit": "m",
         "kind": "diverging",
         "description": "5x5-window median LiDAR value minus obstacle base elevation, both on EGM2008. Window is 5x5 cells of LiDAR's native 10m grid (50m x 50m) - smaller footprint than CopDEM's 5x5-at-30m (150m x 150m); same algorithm, different physical area. See docs/lidar_comparison.md.",
@@ -172,9 +175,9 @@ def svg_histogram(bins, kind, chart_id, width=640, height=220):
     # axis ticks: min, mid, max of bin range. When the range straddles zero
     # (true for every diverging chart in this report), the tick nearest zero
     # is snapped to exactly 0 rather than left as whatever fraction-of-range
-    # value it landed on (e.g. "-1" or "2") - readers need "no error" to be
-    # a labeled point on the axis, not just inferred from the unlabeled
-    # zero-line drawn separately below.
+    # value it landed on (e.g. "-1" or "2") - readers need "no discrepancy"
+    # to be a labeled point on the axis, not just inferred from the
+    # unlabeled zero-line drawn separately below.
     lo_all, hi_all = bins[0][0], bins[-1][1]
     tick_vals = [lo_all + frac * (hi_all - lo_all) for frac in (0, 0.5, 1)]
     if lo_all < 0 < hi_all:

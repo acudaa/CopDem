@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Generate a self-contained static HTML analytical report for Montenegro's
 obstacles_dem_diff.csv: distribution + summary statistics for the
-single-cell and 5x5-window-median Copernicus-DEM-vs-obstacle-base errors
-(both signed, both on EGM2008), whole dataset and by obstacle type.
+single-cell and 5x5-window-median Copernicus-DEM-vs-obstacle-base
+discrepancies (both signed, both on EGM2008), whole dataset and by
+obstacle type.
 
 A separate script from analyze_obstacles_diff.py (Austria), not a shared
 generalization of it, for two reasons that make the two reports genuinely
@@ -34,13 +35,13 @@ OUTPUT_HTML = ROOT_DIR / "reports" / "obstacles_dem_diff_analysis_montenegro.htm
 
 FIELDS = {
     "error_single_m": {
-        "label": "Single-cell error",
+        "label": "Single-cell discrepancy",
         "unit": "m",
         "kind": "diverging",
         "description": "CopDEM (single-cell, bilinear) minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base.",
     },
     "error_5x5_median_m": {
-        "label": "5×5-window median error",
+        "label": "5×5-window median discrepancy",
         "unit": "m",
         "kind": "diverging",
         "description": "5x5-window median CopDEM value minus obstacle base elevation, both on EGM2008. Positive = DEM reads above the true base.",

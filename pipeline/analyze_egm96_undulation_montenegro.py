@@ -192,11 +192,11 @@ def build_report():
     </div>
     <p>Every metre of this is a metre CopDEM would be silently wrong by, if compared to
        Montenegro's obstacle elevations without correcting for the geoid difference —
-       comparable in scale to a meaningful fraction of CopDEM's own typical error against
-       the obstacle base elevations (see reports/obstacles_dem_diff_analysis_montenegro.html:
-       CopDEM's single-cell error mean there is ~5m). This correction alone is not small
+       comparable in scale to a meaningful fraction of CopDEM's own typical discrepancy
+       against the obstacle base elevations (see reports/obstacles_dem_diff_analysis_montenegro.html:
+       CopDEM's single-cell discrepancy mean there is ~5m). This correction alone is not small
        enough to ignore, though it is one-directional and smooth (see insets below), unlike
-       CopDEM's own noisier per-point error.</p>
+       CopDEM's own noisier per-point discrepancy.</p>
     <h2 style="margin-top:24px;">Distribution</h2>
     <img src="{hist_uri}" alt="Histogram of EGM2008-EGM96 undulation across Montenegro">
   </section>
@@ -209,7 +209,7 @@ def build_report():
   <section class="card">
     <h2>Spatial pattern — two area insets</h2>
     <p>The correction is a smooth, large-scale (low-frequency) signal — it varies gradually
-       across the country rather than jumping around like terrain-driven DEM error does. These
+       across the country rather than jumping around like terrain-driven DEM discrepancy does. These
        two insets, chosen to bracket Montenegro's north-south extent, show the gradient
        directly: mean {north_mean:.3f} m in the north (Nikšić/Krnovo area, interior/higher
        elevation) vs. mean {south_mean:.3f} m in the south (Ulcinj coast) — a real, visible
