@@ -141,12 +141,28 @@ CopDEM onto it instead:
    calling `vertical_datum` (which expects lon/lat).
 4. `diff = CopDEM − (LiDAR + correction)` — same subtraction convention as
    `error_single_m` (positive = CopDEM reads above LiDAR).
-5. **Sanity clip**: `|diff| > 100 m` → nodata. Same defensive guard as the
-   previous version, for the same real reason: the national vertical-datum
-   grid produces implausible values outside Austria's actual border, even
-   within a block that's otherwise inside CopDEM's/LiDAR's rectangular
-   extent. LiDAR's own nodata mask already excludes non-Austria territory
-   in practice, so this is a second layer, not the primary safeguard.
+
+**No sanity clip** (an earlier version clipped `|diff| > 100 m` to nodata,
+copying the same defensive guard used in the previous 30 m-grid version).
+Removed after a real finding, not a hunch: near **Grossglockner**
+(Austria's highest peak, 3798 m), a pixel showing a genuine, individually
+verified **−124.3 m** CopDEM error (LiDAR 3730.2 m vs. CopDEM 3605.9 m,
+both read directly and checked by hand) was being silently erased as a
+"hole" by the clip. That's not an artifact — InSAR-derived DEMs like
+CopDEM are well known to have large errors on steep peaks and ridgelines
+from radar layover/foreshortening, and this project exists specifically
+to characterize CopDEM's accuracy, so hiding its largest, most
+terrain-specific errors defeated the point.
+
+The clip was originally added for an unrelated reason: the GHA correction
+grid produces implausible values *outside Austria's real border* (found
+during earlier testing at a random non-Austria point). Removing the clip
+is judged safe, not just convenient: LiDAR only has data *within* Austria,
+and the correction grid is only unreliable *outside* Austria — those two
+conditions shouldn't co-occur at any pixel that actually has LiDAR data
+to write. If wild artifact values ever do reappear in the output, the
+correct fix is a proper Austria-border mask, not a blunt value threshold
+that also erases real signal.
 
 **Processing**: the full grid is 58,061 × 31,793 ≈ 1.85 billion pixels —
 too large for one in-memory array, so it's processed in 2048×2048-pixel
@@ -186,10 +202,13 @@ terrain vs. specifically at obstacle locations).
   (MGI) and WGS84 beyond what `rasterio.warp.reproject`'s standard
   CRS-to-CRS transform provides — no separate MGI→WGS84 grid-based
   horizontal correction was investigated.
-- The 100 m sanity clip is a blunt instrument (a fixed threshold, not a
-  border-aware mask) — it happens to work because the artifact values
-  it's guarding against are far larger than any real signal, but a more
-  precise fix would clip to Austria's actual border polygon instead.
+- No border-aware guard against the outside-Austria correction-grid
+  artifact (the earlier value-based sanity clip was removed — see above —
+  and never replaced with an Austria-border mask). Judged safe given
+  LiDAR's own nodata already excludes non-Austria territory, but if that
+  reasoning ever turns out wrong, a border mask is the correct fix, not
+  reintroducing a blunt value threshold that would re-hide real peak-area
+  errors like the Grossglockner one.
 - No stratification of the raster diff by terrain slope, land cover, or
   region — it's the raw per-cell comparison (whole-country distribution
   stats are in the separate raster analysis report, also unstratified).

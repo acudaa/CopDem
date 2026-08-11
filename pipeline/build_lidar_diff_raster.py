@@ -38,9 +38,23 @@ Steps per block:
      data's datum) - see vertical_datum.py and docs/lidar_comparison.md.
   4. diff = CopDEM - (LiDAR + correction), same sign convention as
      error_single_m and the previous raster version.
-  5. Sanity-clip |diff| > 100 m -> nodata (same defensive guard as
-     before, for the same reason: the EVRF2000 Austria grid produces
-     implausible values outside Austria's real border).
+
+NO sanity clip in this version (an earlier version clipped |diff| > 100m
+to nodata). Removed after a real finding: near Grossglockner (Austria's
+highest peak, 3798m), a pixel with a genuine, verified -124.3m CopDEM
+error (InSAR-derived DEMs like CopDEM are known to have large errors on
+steep peaks/ridgelines from radar layover/foreshortening - confirmed by
+reading the actual CopDEM and LiDAR values at that pixel, not assumed)
+was being silently erased as a "hole" by the clip. The clip was
+originally added for a different, unrelated reason (a genuine artifact
+where the GHA correction grid produces implausible values OUTSIDE
+Austria's real border) - but since LiDAR itself only has data WITHIN
+Austria, and the correction grid is only unreliable OUTSIDE Austria,
+those two conditions shouldn't co-occur at any pixel that actually has
+LiDAR data - so removing the clip should be safe in practice, not just
+convenient. See docs/lidar_comparison.md for the full story. If wild
+values ever do reappear, the fix is a proper Austria-border mask, not a
+blunt value threshold.
 
 Output: ONE GeoTIFF (data/dem_diff_lidar_10m.tif), tiled + compressed +
 with overviews for fast QGIS rendering — no VRT-mosaic trick needed this
@@ -66,7 +80,6 @@ OUTPUT_PATH = ROOT_DIR / "data" / "dem_diff_lidar_10m.tif"
 
 COUNTRY_VERTICAL_EPSG = SOURCE_VERTICAL_CRS["AT_LIDAR_DHM"]  # GHA (EPSG:5778) - see vertical_datum.py
 COARSE_GRID_STEP_PX = 150  # ~1.5km spacing at 10m resolution - same physical spacing as before
-SANITY_CLIP_M = 100
 BLOCK_SIZE = 2048  # pixels per side, per processing block
 
 _to_wgs84 = Transformer.from_crs("EPSG:31287", "EPSG:4326", always_xy=True)
@@ -149,7 +162,6 @@ def run(lidar_path=LIDAR_PATH, copdem_vrt_path=COPDEM_VRT_PATH, output_path=OUTP
                         lidar_egm2008 = lidar_filled + correction
 
                         diff = copdem_block.astype("float64") - lidar_egm2008
-                        diff = np.where(np.abs(diff) > SANITY_CLIP_M, np.nan, diff)
                         diff = np.where(lidar_valid, diff, np.nan).astype("float32")
 
                         if np.all(np.isnan(diff)):
