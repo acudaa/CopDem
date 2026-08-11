@@ -93,6 +93,26 @@ assumption and the "same way, different window footprint" caveat.
 | `error_5x5_min_lidar_m`, `error_5x5_median_lidar_m`, `error_5x5_mean_lidar_m` | Each LiDAR window statistic minus `elev_base_egm2008_m`. |
 | `capture_signal_lidar_m` | `lidar_single_egm2008_m − lidar_5x5_median_egm2008_m` — the LiDAR-side equivalent of `capture_signal_m`, same self-comparison diagnostic. |
 
+## Montenegro's fields — same schema, a few source-driven differences
+
+`data/obstacles/montenegro/obstacles_simple_points.csv` (from
+`obstacles_montenegro.py`) and `obstacles_dem_diff.csv` (from the same
+`extract_dem.py` used for Austria — the schema above is reused unchanged
+for every `dem_*`/`error_*`/`capture_signal_m` field) follow the same
+column meanings and sign convention as above, with these differences driven
+by what Montenegro's source document actually provides — see
+[montenegro.md](montenegro.md) for the full story:
+
+| Field | Meaning |
+|---|---|
+| `elev_top_amsl_ft`, `height_agl_ft` | The source PDF's raw values, in **feet** (ENR 5.4's "ELEV / HGT GND (FT)" column) — kept alongside the metre versions since feet is what the source actually states. |
+| `elev_vertical_crs_epsg` | Always `5773` (EGM96) for Montenegro — **not** the country's true national datum (Trieste height, EPSG:5195), which turned out to have no working PROJ transformation grid; see montenegro.md for why EGM96 is the correct practical choice here, per SMATSA's own AIP. |
+| `lit`, `obst_lgt_type_colour` | Whether the obstacle carries an obstacle light (`True`/`False`) and its flash type/colour (e.g. `"FLG / R"`) where stated — Montenegro's equivalent of Austria's `lighted` field, plus the light's type/colour where Austria's source didn't provide one. |
+| Not present | `region`, `district` (source has no administrative subdivision column), `day_marking`, `horizontal_accuracy_m`, `vertical_accuracy_elev_m`, `vertical_accuracy_agl_m` (source states none of these). |
+
+Montenegro has no `error_*_lidar_m` / `lidar_*` columns at all (no local
+ground-truth DEM — see montenegro.md).
+
 ## Worked example
 
 Row for `LO_ODS_000001 - Sonnenberg` (an antenna mast):

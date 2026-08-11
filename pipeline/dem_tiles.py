@@ -29,6 +29,11 @@ CACHE_DIR = Path(__file__).parent.parent / "data" / "dem_tiles"
 # Approximate bounding box for Austria (min_lon, min_lat, max_lon, max_lat)
 AUSTRIA_BBOX = (9.5, 46.35, 17.2, 49.05)
 
+# Approximate bounding box for Montenegro, with a small margin so the
+# westernmost/southernmost obstacle points (Ulcinj-Mozura wind farm, near
+# the coast/Albania border) aren't right at a chunk edge.
+MONTENEGRO_BBOX = (18.35, 41.75, 20.45, 43.65)
+
 METERS_PER_DEG_LAT = 111_320  # ~constant everywhere
 TARGET_RESOLUTION_M = 30
 

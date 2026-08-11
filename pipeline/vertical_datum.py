@@ -38,6 +38,21 @@ GHA = 5778                    # GHA height ("Gebrauchshoehen Adria" / "Adria Tri
                               # Austria's legacy practical height system, datum Trieste.
                               # NOT the same as EVRF2000 Austria (EPSG:9274) - see
                               # SOURCE_VERTICAL_CRS["AT_LIDAR_DHM"] below.
+TRIESTE_HEIGHT = 5195         # Trieste height (datum EPSG:1050) - normal-orthometric
+                              # heights referenced to mean Adriatic Sea level at Trieste's
+                              # Molo Sartorio gauge, applicable per EPSG.io to "Montenegro
+                              # onshore" and matching the physical datum description in
+                              # SMATSA's AIP GEN 2.1 ("mean level of the Adriatic Sea...
+                              # epoch 1971.0"). Kept here for documentation/reference only
+                              # - DO NOT use this for actual conversions. Verified
+                              # empirically (see docs/montenegro.md) that PROJ has no real
+                              # transformation grid for EPSG:5195: geoid_to_ellipsoidal()
+                              # silently returns the input height UNCHANGED (0.0 undulation
+                              # applied) instead of erroring, which is worse than useless -
+                              # a wrong-but-plausible-looking number. Caught only because
+                              # the resulting EGM2008 value was implausible (~-32m at a
+                              # ~7m-elevation valley site, a ~39m "correction" where a few
+                              # tenths of a metre was expected).
 
 # Per-source vertical datum registry — the per-state (and per-*source*:
 # different products from the same state can use different datums, see
@@ -58,6 +73,20 @@ SOURCE_VERTICAL_CRS = {
     # -0.47m/+0.12m/-0.24m at three test points - real, not negligible for
     # this project's error scale. See docs/lidar_comparison.md.
     "AT_LIDAR_DHM": GHA,
+    # Montenegro obstacle data set (VFR AIP Srbija/Crna Gora, ENR 5.4).
+    # Montenegro's TRUE national datum is Trieste height (EPSG:5195, see
+    # above) - but PROJ can't actually transform it (verified: silent
+    # no-op, not an error), so it's unusable here even though it's the
+    # "correct" answer on paper. Falling back to EGM96 instead - NOT a
+    # guess: SMATSA's own AIP GEN 2.1 (Serbia/Montenegro) section 4.2
+    # states "Earth Gravitational Model 1996 (EGM 96) is in use. This
+    # model is used only for transformation of ellipsoidal heights in
+    # orthometric, for points with required accuracy below 1 M" - i.e.
+    # EGM96 is what SMATSA itself actually uses in practice for exactly
+    # this kind of conversion, not a generic ICAO/AIXM default assumed
+    # without checking (contrast with Austria, where EGM96 was explicitly
+    # NOT what the source used). See docs/montenegro.md.
+    "ME": EGM96,
 }
 
 _transformer_cache = {}

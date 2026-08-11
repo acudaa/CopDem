@@ -31,6 +31,7 @@ from docx.shared import Cm, Inches, Pt, RGBColor
 sys.path.insert(0, str(Path(__file__).parent))
 import analyze_obstacles_diff as obs_mod
 import analyze_lidar_raster_diff as raster_mod
+import analyze_obstacles_diff_montenegro as obs_mne_mod
 
 ROOT_DIR = Path(__file__).parent.parent
 OUTPUT_DIR = ROOT_DIR / "reports" / "word"
@@ -363,6 +364,108 @@ def build_raster_report():
     return out_path
 
 
+# ---------------------------------------------------------------------------
+# Report 3: Montenegro obstacle-based analysis (mirrors
+# obstacles_dem_diff_analysis_montenegro.html) — CopDEM only, no LiDAR
+# section, and a scope note up front (see analyze_obstacles_diff_montenegro.py)
+# ---------------------------------------------------------------------------
+
+def build_montenegro_obstacle_report():
+    rows = obs_mne_mod.load_rows()
+    doc = Document()
+
+    add_title(doc, "DEM vs. Obstacle Base — Analysis (Montenegro)")
+    overall = {}
+    for field_key in obs_mne_mod.FIELDS:
+        values = obs_mne_mod.values_for(rows, field_key)
+        overall[field_key] = obs_mne_mod.compute_stats(values)
+
+    n_total = len(rows)
+    add_intro(
+        doc,
+        f"{n_total:,} obstacles compared against Copernicus DEM GLO-30 (no local "
+        f"high-resolution ground-truth DEM is available for Montenegro, unlike Austria — "
+        f"see docs/montenegro.md). Generated from obstacles_dem_diff.csv. "
+        f"Field definitions: docs/output_fields.md.",
+    )
+
+    scope_p = doc.add_paragraph(
+        "Scope, read before comparing to Austria: Montenegro's obstacle list is sourced "
+        "from AIP ENR 5.4 (“Air Navigation Obstacles”), which by its own stated scope "
+        "covers only permanent obstacles ≥328 FT (100 M) AGL — not a full national "
+        f"obstacle inventory like Austria's dataset. That's why n={n_total} here vs. ~1,932 "
+        "for Austria: a real difference in what's measured, not a smaller country having "
+        "proportionally fewer obstacles recorded. All obstacles here are either antennas or "
+        "wind turbines — no towers, buildings, chimneys, cranes, etc., unlike Austria's "
+        "broader mix. Vertical datum: EGM96 (SMATSA's own stated practical reference for "
+        "sub-1m-accuracy conversions in AIP GEN 2.1 — Montenegro's true national datum, "
+        "Trieste height/EPSG:5195, turned out to have no working PROJ transformation grid; "
+        "see docs/montenegro.md for the full story)."
+    )
+    for run in scope_p.runs:
+        run.font.size = Pt(9)
+        run.font.italic = True
+
+    doc.add_heading("Overview", level=1)
+    headers = ["Field", "n", "mean", "median", "stdev", "p5", "p95", "min", "max"]
+    overview_rows = []
+    for field_key, meta in obs_mne_mod.FIELDS.items():
+        s = overall[field_key]
+        overview_rows.append([
+            meta["label"], f"{s['n']:,}", fmt(s["mean"]), fmt(s["median"]),
+            fmt(s["stdev"]), fmt(s["p5"]), fmt(s["p95"]), fmt(s["min"]), fmt(s["max"]),
+        ])
+    add_table(doc, headers, overview_rows, col_widths_cm=[4, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5])
+
+    TMP_CHART_DIR.mkdir(parents=True, exist_ok=True)
+    for field_key, meta in obs_mne_mod.FIELDS.items():
+        s = overall[field_key]
+        doc.add_heading(f"{meta['label']} ({meta['unit']})", level=2)
+        doc.add_paragraph(meta["description"])
+
+        headers = ["n", "mean", "median", "stdev", "p5–p95"]
+        add_table(doc, headers, [[
+            f"{s['n']:,}", fmt(s["mean"]), fmt(s["median"]), fmt(s["stdev"]),
+            f"{fmt(s['p5'])} – {fmt(s['p95'])}",
+        ]])
+
+        values = obs_mne_mod.values_for(rows, field_key)
+        bins = obs_mne_mod.histogram(values)
+        hist_path = TMP_CHART_DIR / f"hist_mne_{field_key}.png"
+        plot_histogram(bins, hist_path, xlabel=f"{meta['label']} (m)")
+        doc.add_paragraph("Distribution (whole dataset):").runs[0].font.bold = True
+        add_image(doc, hist_path)
+
+        type_stats = obs_mne_mod.by_type_stats(rows, field_key)
+        doc.add_paragraph("By obstacle type:").runs[0].font.bold = True
+        type_headers = ["Obstacle type", "n", "mean", "median", "stdev", "min", "max"]
+        type_rows = []
+        for ts in type_stats:
+            flag = " †" if ts["n"] < obs_mne_mod.MIN_TYPE_N_FOR_NOTE else ""
+            type_rows.append([
+                ts["type"] + flag, f"{ts['n']:,}", fmt(ts["mean"]), fmt(ts["median"]),
+                fmt(ts["stdev"]), fmt(ts["min"]), fmt(ts["max"]),
+            ])
+        add_table(doc, type_headers, type_rows, col_widths_cm=[3.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5])
+
+        bar_path = TMP_CHART_DIR / f"bar_mne_{field_key}.png"
+        plot_by_type_bar(type_stats, bar_path, obs_mne_mod.MIN_TYPE_N_FOR_NOTE)
+        add_image(doc, bar_path)
+
+    doc.add_heading("Notes", level=1)
+    doc.add_paragraph(
+        f"† obstacle type with n < {obs_mne_mod.MIN_TYPE_N_FOR_NOTE} — too few points for a "
+        "stable mean. See docs/montenegro.md for sampling method, the vertical-datum decision, "
+        "and known limitations."
+    )
+
+    out_path = OUTPUT_DIR / "CopDem_Montenegro_Obstacle_Analysis.docx"
+    doc.save(out_path)
+    print(f"wrote {out_path}")
+    return out_path
+
+
 if __name__ == "__main__":
     build_obstacle_report()
     build_raster_report()
+    build_montenegro_obstacle_report()
