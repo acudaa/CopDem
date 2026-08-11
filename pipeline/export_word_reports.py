@@ -103,9 +103,18 @@ def plot_histogram(bins, out_path, xlabel="m", core_lo=None, core_hi=None,
     if core_lo < 0 < core_hi:
         ax.axvline(value_to_x(0), color="#c3c2b7", linewidth=1, zorder=2)
 
+    # Snap whichever tick lands nearest zero to exactly 0 (same fix applied
+    # to both HTML reports' svg_histogram()) - core_lo/core_hi are percentile
+    # bounds, not symmetric about zero, so even spacing alone usually misses
+    # an exact "0" label; readers need "no error" to be a visible tick, not
+    # just the unlabeled zero-line drawn above.
+    tick_fracs = (0, 0.25, 0.5, 0.75, 1)
+    tick_vals = [core_lo + frac * (core_hi - core_lo) for frac in tick_fracs]
+    if core_lo < 0 < core_hi:
+        snap_i = min(range(len(tick_vals)), key=lambda i: abs(tick_vals[i]))
+        tick_vals[snap_i] = 0
     tick_positions, tick_labels = [], []
-    for frac in (0, 0.25, 0.5, 0.75, 1):
-        val = core_lo + frac * (core_hi - core_lo)
+    for val in tick_vals:
         tick_positions.append(value_to_x(val))
         tick_labels.append(f"{val:.0f}")
     ax.set_xticks(tick_positions)

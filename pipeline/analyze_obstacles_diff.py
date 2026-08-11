@@ -169,11 +169,19 @@ def svg_histogram(bins, kind, chart_id, width=640, height=220):
                 f'class="zero-line"/>'
             )
 
-    # axis ticks: min, mid, max of bin range
+    # axis ticks: min, mid, max of bin range. When the range straddles zero
+    # (true for every diverging chart in this report), the tick nearest zero
+    # is snapped to exactly 0 rather than left as whatever fraction-of-range
+    # value it landed on (e.g. "-1" or "2") - readers need "no error" to be
+    # a labeled point on the axis, not just inferred from the unlabeled
+    # zero-line drawn separately below.
     lo_all, hi_all = bins[0][0], bins[-1][1]
+    tick_vals = [lo_all + frac * (hi_all - lo_all) for frac in (0, 0.5, 1)]
+    if lo_all < 0 < hi_all:
+        snap_i = min(range(len(tick_vals)), key=lambda i: abs(tick_vals[i]))
+        tick_vals[snap_i] = 0
     ticks = []
-    for frac in (0, 0.5, 1):
-        val = lo_all + frac * (hi_all - lo_all)
+    for frac, val in zip((0, 0.5, 1), tick_vals):
         x = pad_l + frac * plot_w
         ticks.append(
             f'<text x="{x:.2f}" y="{height - 6}" class="axis-label" '

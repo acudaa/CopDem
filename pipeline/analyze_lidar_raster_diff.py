@@ -166,9 +166,19 @@ def svg_histogram(bins, core_lo, core_hi, core_start_idx, core_end_idx, width=76
         zero_x = value_to_x(0)
         zero_line = f'<line x1="{zero_x:.2f}" y1="{pad_t}" x2="{zero_x:.2f}" y2="{pad_t + plot_h}" class="zero-line"/>'
 
+    # Snap whichever tick lands nearest zero to exactly 0 (same fix as
+    # analyze_obstacles_diff.py's svg_histogram) - core_lo/core_hi are
+    # percentile bounds, not symmetric about zero, so plain even spacing
+    # over (0, 0.25, 0.5, 0.75, 1) usually lands on something like "-2" or
+    # "6" rather than an exact, labeled 0 - readers need "no error" to be a
+    # visible tick, not just the unlabeled zero-line drawn above.
+    tick_fracs = (0, 0.25, 0.5, 0.75, 1)
+    tick_vals = [core_lo + frac * (core_hi - core_lo) for frac in tick_fracs]
+    if core_lo < 0 < core_hi:
+        snap_i = min(range(len(tick_vals)), key=lambda i: abs(tick_vals[i]))
+        tick_vals[snap_i] = 0
     ticks = []
-    for frac in (0, 0.25, 0.5, 0.75, 1):
-        val = core_lo + frac * (core_hi - core_lo)
+    for frac, val in zip(tick_fracs, tick_vals):
         x = value_to_x(val)
         anchor = "start" if frac == 0 else "end" if frac == 1 else "middle"
         ticks.append(f'<text x="{x:.2f}" y="{height - 8}" class="axis-label" text-anchor="{anchor}">{_fmt(val,0)}</text>')
