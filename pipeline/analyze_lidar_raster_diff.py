@@ -72,15 +72,60 @@ def compute_stats(values):
     }
 
 
-def histogram(values, n_bins=30):
-    lo, hi = float(np.min(values)), float(np.max(values))
-    if lo == hi:
-        lo, hi = lo - 1, hi + 1
-    counts, edges = np.histogram(values, bins=n_bins, range=(lo, hi))
-    return [(edges[i], edges[i + 1], int(counts[i])) for i in range(n_bins)]
+def histogram(values, n_bins=30, tail_percentile=1):
+    """Bins the CORE of the distribution (tail_percentile to 100-tail_percentile)
+    at full resolution, plus one explicit catch-all bin at each end covering
+    everything beyond that - so extreme values (e.g. the Grossglockner-area
+    peak errors, now unclipped - see docs/lidar_comparison.md) are still
+    counted and visible in their own bin, not silently excluded from the
+    chart just because binning the true min-to-max range would compress the
+    actual distribution into a single spike. Returns (bins, core_lo, core_hi)
+    - core_lo/core_hi are for axis ticks; bins includes the tail catch-alls
+    beyond them where present.
+    """
+    core_lo = float(np.percentile(values, tail_percentile))
+    core_hi = float(np.percentile(values, 100 - tail_percentile))
+    if core_lo == core_hi:
+        core_lo, core_hi = core_lo - 1, core_hi + 1
+    true_lo, true_hi = float(np.min(values)), float(np.max(values))
+
+    below_count = int(np.sum(values < core_lo))
+    above_count = int(np.sum(values > core_hi))
+
+    counts, edges = np.histogram(values, bins=n_bins, range=(core_lo, core_hi))
+    bins = [(edges[i], edges[i + 1], int(counts[i])) for i in range(n_bins)]
+    core_start_idx = 0  # index of the first CORE (non-tail) bin, tracked explicitly
+    if below_count:
+        bins.insert(0, (true_lo, core_lo, below_count))
+        core_start_idx = 1
+    if above_count:
+        bins.append((core_hi, true_hi, above_count))
+    core_end_idx = core_start_idx + n_bins - 1  # index of the last core bin
+    return bins, core_lo, core_hi, core_start_idx, core_end_idx
 
 
-def svg_histogram(bins, width=760, height=260):
+def svg_histogram(bins, core_lo, core_hi, core_start_idx, core_end_idx, width=760, height=260):
+    """bins may include one catch-all bin at each end beyond (core_lo, core_hi)
+    (see histogram() above) - those are rendered with a distinct label so
+    they read as "everything past this point," not as a regular-width bin
+    that happens to look small. Axis ticks span (core_lo, core_hi), NOT the
+    true min/max - the catch-all bins would otherwise compress the whole
+    visible chart into one spike (this replaced an earlier version that had
+    exactly that problem once the raster's sanity clip was removed and the
+    true range widened to include peak-area outliers - see
+    docs/lidar_comparison.md). core_start_idx/core_end_idx (from histogram())
+    say exactly which bin indices are the real core bins, so ticks/zero-line
+    can be positioned by bin index without re-deriving it here.
+
+    All bins render as EQUAL screen width, by index - a standard histogram
+    convention. This means a catch-all tail bin (which can span a much wider
+    VALUE range than a core bin, e.g. hundreds of metres vs a fraction of a
+    metre) still only takes one column's width on screen. That's intentional
+    (a chart with one column stretched to true-value-proportional width would
+    itself be dominated by the tail), but it does mean bin width on screen is
+    not value-proportional outside the core range - the tooltip is where the
+    tail bin's real extent is stated exactly.
+    """
     pad_l, pad_r, pad_t, pad_b = 50, 16, 16, 30
     plot_w = width - pad_l - pad_r
     plot_h = height - pad_t - pad_b
@@ -97,24 +142,34 @@ def svg_histogram(bins, width=760, height=260):
         w = max(1.0, bin_px - gap)
         mid = (lo + hi) / 2
         color = "var(--series-neg)" if mid < 0 else "var(--series-pos)"
+        is_tail = i < core_start_idx or i > core_end_idx
+        label = (f"< {_fmt(core_lo,1)} m (tail, down to {_fmt(lo,1)} m): {count:,} cells" if i < core_start_idx
+                 else f"> {_fmt(core_hi,1)} m (tail, up to {_fmt(hi,1)} m): {count:,} cells" if i > core_end_idx
+                 else f"{_fmt(lo,1)} to {_fmt(hi,1)} m: {count:,} cells (subsampled)")
         bars.append(
-            f'<rect class="bar" x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{bar_h:.2f}" '
+            f'<rect class="bar{" bar-tail" if is_tail else ""}" x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{bar_h:.2f}" '
             f'rx="2" fill="{color}" '
-            f'data-tip="{_fmt(lo,1)} to {_fmt(hi,1)} m: {count:,} cells (subsampled)"/>'
+            f'data-tip="{label}"/>'
         )
 
+    # Zero-line and axis ticks are positioned by (bin index + fraction within
+    # that bin), using core_lo/core_hi mapped onto [core_start_idx, core_end_idx]
+    # - not by assuming bins[0]/bins[-1] are the chart's value extremes,
+    # which is only true when there are no tail bins.
+    def value_to_x(v):
+        frac_of_core = (v - core_lo) / (core_hi - core_lo)
+        bin_frac = core_start_idx + frac_of_core * (core_end_idx - core_start_idx + 1)
+        return pad_l + bin_frac * bin_px
+
     zero_line = ""
-    lo0, hi0 = bins[0][0], bins[-1][1]
-    if lo0 < 0 < hi0:
-        zero_x = pad_l + ((0 - lo0) / (hi0 - lo0)) * plot_w
-        zero_line = (
-            f'<line x1="{zero_x:.2f}" y1="{pad_t}" x2="{zero_x:.2f}" y2="{pad_t + plot_h}" class="zero-line"/>'
-        )
+    if core_lo < 0 < core_hi:
+        zero_x = value_to_x(0)
+        zero_line = f'<line x1="{zero_x:.2f}" y1="{pad_t}" x2="{zero_x:.2f}" y2="{pad_t + plot_h}" class="zero-line"/>'
 
     ticks = []
     for frac in (0, 0.25, 0.5, 0.75, 1):
-        val = lo0 + frac * (hi0 - lo0)
-        x = pad_l + frac * plot_w
+        val = core_lo + frac * (core_hi - core_lo)
+        x = value_to_x(val)
         anchor = "start" if frac == 0 else "end" if frac == 1 else "middle"
         ticks.append(f'<text x="{x:.2f}" y="{height - 8}" class="axis-label" text-anchor="{anchor}">{_fmt(val,0)}</text>')
     y_ticks = []
@@ -155,8 +210,8 @@ def build_report():
     coverage_pct = 100 * valid.size / data.size
 
     stats = compute_stats(valid)
-    bins = histogram(valid)
-    hist_svg = svg_histogram(bins)
+    bins, core_lo, core_hi, core_start_idx, core_end_idx = histogram(valid)
+    hist_svg = svg_histogram(bins, core_lo, core_hi, core_start_idx, core_end_idx)
 
     native_px = native_shape[0] * native_shape[1]
 
@@ -212,6 +267,8 @@ def build_report():
   .chart {{ display: block; max-width: 100%; height: auto; overflow: visible; }}
   .bar {{ transition: opacity 0.1s; cursor: pointer; }}
   .bar:hover, .bar:focus {{ opacity: 0.75; outline: none; }}
+  .bar-tail {{ opacity: 0.55; }}
+  .bar-tail:hover, .bar-tail:focus {{ opacity: 0.85; }}
   .zero-line {{ stroke: var(--baseline); stroke-width: 1; }}
   .baseline {{ stroke: var(--baseline); stroke-width: 1; }}
   .axis-label {{ font-size: 10px; fill: var(--text-muted); font-variant-numeric: tabular-nums; }}
@@ -258,6 +315,11 @@ def build_report():
       <div class="kpi"><div class="kpi-label">p1&#8211;p99</div><div class="kpi-value">{_fmt(stats['p1'])} &#8211; {_fmt(stats['p99'])}</div></div>
     </div>
     <h4>Distribution</h4>
+    <p class="chart-caption">Bins span the 1st&#8211;99th percentile at full resolution; the faded end bars
+       (if present) are catch-alls for everything beyond &#8212; hover for their real extent. Binning the
+       true min/max instead would compress this chart to a single spike, since a handful of extreme-terrain
+       cells (steep peaks/ridgelines, where CopDEM is known to have large errors &#8212; see the footer)
+       span a much wider range than the rest of the data.</p>
     {hist_svg}
     <h4>Summary statistics</h4>
     {render_stats_table(stats)}
@@ -265,9 +327,13 @@ def build_report():
 
   <footer>
     No by-category breakdown here (unlike the obstacle report) &#8212; this is a whole-country
-    raster comparison with no natural category to group by. Min/max reflect the &#177;100&#160;m
-    sanity clip applied during raster construction (a defensive guard, not a real signal &#8212;
-    see docs/lidar_comparison.md); p1/p99 are shown instead as the more meaningful tail measure.
+    raster comparison with no natural category to group by. No value clipping is applied to this
+    raster &#8212; min/max are real, unbounded extremes, and can be dominated by a handful of
+    pixels in extreme terrain (e.g. steep peaks/ridgelines, where InSAR-derived DEMs like CopDEM
+    are known to have large errors from radar layover/foreshortening &#8212; see
+    docs/lidar_comparison.md for a specific, individually-verified example near Grossglockner).
+    p1/p99 are shown alongside as the more representative tail measure, less sensitive to a
+    small number of such extreme cells.
   </footer>
 </div>
 <div id="tooltip"></div>

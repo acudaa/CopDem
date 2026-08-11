@@ -178,14 +178,26 @@ exactly one output grid now, not 40 misaligned CopDEM chunks to stitch.
 outside Austria or outside CopDEM's fetched extent, skipped rather than
 written empty).
 
-**Whole-raster distribution** (see
+**Whole-raster distribution, after removing the sanity clip** (see
 [the separate raster analysis report](../reports/copdem_lidar_raster_diff_analysis.html)
 for the full breakdown — subsampled every 15th pixel for tractability,
 ~3.8M sample cells):
 
-| | mean | median | stdev | p1 | p99 |
-|---|---|---|---|---|---|
-| CopDEM − LiDAR (m) | +6.18 | +3.90 | 7.89 | −7.55 | +26.31 |
+| | mean | median | stdev | p1 | p99 | min | max |
+|---|---|---|---|---|---|---|---|
+| CopDEM − LiDAR (m) | +6.19 | +3.90 | 8.25 | −7.56 | +26.35 | −362.3 | +540.1 |
+
+The core statistics (mean/median/p1/p99) barely moved from the clipped
+version (+6.18/+3.90/−7.55/+26.31) — as expected, since only ~0.008% of
+pixels were ever near the old clip boundary (confirmed during testing).
+**min/max did move dramatically** (were artificially bounded at ∓100 m by
+the old clip; are now real, unbounded extremes) — this is the clip's
+removal doing exactly its job: surfacing genuine large errors like the
+Grossglockner one, not hiding them. The raster report's histogram bins
+the 1st–99th percentile at full resolution with an explicit catch-all bin
+at each tail (labelled with its real extent on hover), rather than
+binning true min-to-max, which would otherwise compress the actual
+distribution into a single spike.
 
 Same order of magnitude as the point-based obstacle comparison
 (`error_single_m` mean +5.25 m), which is a reasonable cross-check even
